@@ -19,5 +19,9 @@ namespace Diplom.DataBase.Models
         
         [Required]
         public string Key { get; set; }
+
+        public DateTime InsertDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
+
     }
 }
