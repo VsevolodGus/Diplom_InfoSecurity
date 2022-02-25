@@ -1,13 +1,14 @@
-﻿using Diplom.DataBase.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Diplom.DataBase.Models;
+using Diplom.DataBase.InterfaceRepository;
 
 namespace Diplom.DataBase
 {
-    public class FileRepository
+    internal class FileRepository : IFileRepository
     {
         private readonly DbContextFactory dbContextFactory;
 

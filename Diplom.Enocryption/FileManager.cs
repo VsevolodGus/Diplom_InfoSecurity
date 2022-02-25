@@ -1,17 +1,24 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
 using System.IO;
-using Microsoft.AspNetCore.Http;
+using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http;
 using Diplom.DataBase.Models;
-using Diplom.DataBase;
+using Diplom.DataBase.InterfaceRepository;
 
 namespace Diplom.Enocryption
 {
     public class FileManager
     {
-        private readonly FileRepository fileRepository;
+        private readonly IFileRepository fileRepository;
+        private readonly EncryptService encryptService;
+
+        public FileManager(IFileRepository fileRepository)
+        {
+            this.fileRepository = fileRepository;
+            this.encryptService = new EncryptService();
+        }
 
         public async Task<bool> SetFile(IFormFile upload)
         {
@@ -23,7 +30,7 @@ namespace Diplom.Enocryption
             {
                 file.FileContent = this.GetBLOBFile(upload);
                 file.HashFile = this.CalculateSHA256Hash(file.FileContent, file.Id);
-                file.AssimentCode = this.AssimetricCode(file.AssimentCode, /*file.Key*/"");
+                file.AssimentCode = encryptService.AssimetricCode(file.AssimentCode, /*file.Key*/"");
                 await fileRepository.AddFile(file);
                 return true;
             }
@@ -69,52 +76,5 @@ namespace Diplom.Enocryption
             }
         }
 
-        #region Получение ассиметричного кода        
-        public string AssimetricCode(string input, string key)
-        {
-            var rsa = new RSACryptoServiceProvider();
-            
-            var publicKey = rsa.ExportParameters(false);
-
-            var byteConverter = new UnicodeEncoding();
-
-            byte[] encBytes = RSAEncrypt(byteConverter.GetBytes(input), publicKey, false);
-
-            //var privateKey = asd.ExportParameters(true);
-            //byte[] decBytes = RSADecrypt(encBytes, privateKey, false);
-            return Encoding.UTF8.GetString(encBytes);
-        }
-
-
-        static public byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
-        {
-            //Create a new instance of RSACryptoServiceProvider.
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
-
-            //Import the RSA Key information. This only needs
-            //toinclude the public key information.
-            RSA.ImportParameters(RSAKeyInfo);
-
-            //Encrypt the passed byte array and specify OAEP padding.  
-            //OAEP padding is only available on Microsoft Windows XP or
-            //later.  
-            return RSA.Encrypt(DataToEncrypt, DoOAEPPadding);
-        }
-
-        static public byte[] RSADecrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
-        {
-            //Create a new instance of RSACryptoServiceProvider.
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
-
-            //Import the RSA Key information. This needs
-            //to include the private key information.
-            RSA.ImportParameters(RSAKeyInfo);
-
-            //Decrypt the passed byte array and specify OAEP padding.  
-            //OAEP padding is only available on Microsoft Windows XP or
-            //later.  
-            return RSA.Decrypt(DataToDecrypt, DoOAEPPadding);
-        }
-        #endregion
     }
 }
