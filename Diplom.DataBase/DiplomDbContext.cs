@@ -7,6 +7,8 @@ namespace Diplom.DataBase
     {
         public DbSet<FileModel> FileModels { get; }
 
+        public DbSet<GroupByKey> GroupByKeys { get; }
+
         public DiplomDbContext(DbContextOptions<DiplomDbContext> options) : base(options)
         { }
 

@@ -27,7 +27,7 @@ namespace Diplom
         {
             services.AddControllersWithViews();
             services.AddEfRepositories(Configuration);
-            services.AddSingleton<FileManager>();
+            //services.AddSingleton<FileManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

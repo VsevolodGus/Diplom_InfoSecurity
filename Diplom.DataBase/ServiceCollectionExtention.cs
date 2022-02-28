@@ -20,10 +20,10 @@ namespace Diplom.DataBase
             );
 
             //для доступа к базе
-            services.AddScoped<Dictionary<Type, DiplomDbContext>>();
-            services.AddSingleton<DbContextFactory>();
+            //services.AddScoped<Dictionary<Type, DiplomDbContext>>();
+            //services.AddSingleton<DbContextFactory>();
 
-            services.AddSingleton<IFileRepository, FileRepository>();
+            //services.AddSingleton<IFileRepository, FileRepository>();
 
 
             return services;

@@ -23,5 +23,10 @@ namespace Diplom.DataBase.Models
         public DateTime InsertDate { get; set; }
         public DateTime? UpdateDate { get; set; }
 
+        [Required]
+        public long GroupId { get; set; }
+
+        public virtual GroupByKey Group { get; init; }
+
     }
 }
