@@ -1,0 +1,12 @@
+﻿@model FileDTO
+
+<p><strong>Название:</strong>@Model.Name</p>
+<p><strong>Blob:</strong><a>@Model.Blob</a></p>
+<p><strong>Хэш:</strong>@Model.Hash</p>
+<p><strong>Шифр:</strong>@Model.AsymetricCode</p>
+<p><strong>Ключ шифровки:</strong>@Model.KeyEncrypt</p>
+<p><strong>Ключ дешифровки:</strong>@Model.KeyDecrypt</p>
+@*<form action="@Url.Action(nameof(OrderController.AddItem),"Order")" method="post">
+    <input type="hidden" name="id" value="@Model.ProductId" />
+    <button class=" btn btn-success" type="submit">Добавить в корзину</button>
+</form>*@

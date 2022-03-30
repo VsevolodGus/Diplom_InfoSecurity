@@ -1,51 +1,49 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Diplom.Models;
+using DiplomInfo.DataBase;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Diplom.Controllers
 {
     // TODO 
     // уточнить по поводу ключей для шифрования
 
-
-
-
-
-
-
-
     
     public class FileController : Controller
     {
+        private FileRepository _fileRepository;
+        public FileController(FileRepository fileRepository)
+        {
+            this._fileRepository = fileRepository;
+        }
         public IActionResult Index()
         {
             return View();
         }
 
 
-        public async Task<IActionResult> GetListDataFiles(int skipCount, int count)
+        public async Task<IActionResult> GetListDataFiles(string query = "", int skipCount = 0, int count = 10)
         {
-            return null;
+            var files = _fileRepository.GetFiles(query, skipCount, count);
+            var model = files.Select(c=> new FileModelTable
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Blob = c.Blob,
+            }).ToList();
+            return View("ListFiles", model);
         }
 
 
-        public async Task<IActionResult> GetDataFiles(Guid faileId)
+        public async Task<IActionResult> GetDataFile(Guid fileId)
         {
-            return null;
+            var model = _fileRepository.GetFileById(fileId);
+            return View("DataFile", model);
         }
 
-
-        public async Task<IActionResult> SetFile(/*file*/)
-        {
-            return null;
-        }
-
-
-
-
-        [HttpPost, Route("file/upload")]
         public async Task<IActionResult> Upload()
         {
             var upload = Request.Form.Files.FirstOrDefault();

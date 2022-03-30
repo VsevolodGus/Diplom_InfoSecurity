@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Diplom.Enocryption\Diplom.Enocryption.csproj" />
+    <ProjectReference Include="..\DiplomInfo.DataBase\DiplomInfo.DataBase.csproj" />
   </ItemGroup>
 
 </Project>

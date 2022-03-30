@@ -1,15 +1,9 @@
-using Diplom.DataBase;
-using Diplom.Enocryption;
+using DiplomInfo.DataBase;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Diplom
 {
@@ -26,8 +20,7 @@ namespace Diplom
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddEfRepositories(Configuration);
-            //services.AddSingleton<FileManager>();
+            services.AddSingleton<FileRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

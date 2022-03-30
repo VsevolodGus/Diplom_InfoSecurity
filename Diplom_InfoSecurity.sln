@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diplom", "Diplom\Diplom.csproj", "{80033377-EF98-4449-9063-4744E9BF1832}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diplom.DataBase", "Diplom.DataBase\Diplom.DataBase.csproj", "{B47BD4E4-EBE9-4C1C-8EC9-2D1F77E572A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiplomInfo.DataBase", "DiplomInfo.DataBase\DiplomInfo.DataBase.csproj", "{74ADA67B-B8A1-41C3-BDC8-D121BFEC7334}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diplom.Enocryption", "Diplom.Enocryption\Diplom.Enocryption.csproj", "{9EF3407A-2355-46BC-92EE-F4D7A3AFB550}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diplom.InfoSecurity", "Diplom.InfoSecurity\Diplom.InfoSecurity.csproj", "{C57BA9AE-21EF-459B-AD1B-864D349A6FE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +19,14 @@ Global
 		{80033377-EF98-4449-9063-4744E9BF1832}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80033377-EF98-4449-9063-4744E9BF1832}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80033377-EF98-4449-9063-4744E9BF1832}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B47BD4E4-EBE9-4C1C-8EC9-2D1F77E572A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B47BD4E4-EBE9-4C1C-8EC9-2D1F77E572A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B47BD4E4-EBE9-4C1C-8EC9-2D1F77E572A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B47BD4E4-EBE9-4C1C-8EC9-2D1F77E572A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9EF3407A-2355-46BC-92EE-F4D7A3AFB550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9EF3407A-2355-46BC-92EE-F4D7A3AFB550}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9EF3407A-2355-46BC-92EE-F4D7A3AFB550}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9EF3407A-2355-46BC-92EE-F4D7A3AFB550}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74ADA67B-B8A1-41C3-BDC8-D121BFEC7334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74ADA67B-B8A1-41C3-BDC8-D121BFEC7334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74ADA67B-B8A1-41C3-BDC8-D121BFEC7334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74ADA67B-B8A1-41C3-BDC8-D121BFEC7334}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C57BA9AE-21EF-459B-AD1B-864D349A6FE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C57BA9AE-21EF-459B-AD1B-864D349A6FE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C57BA9AE-21EF-459B-AD1B-864D349A6FE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C57BA9AE-21EF-459B-AD1B-864D349A6FE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
