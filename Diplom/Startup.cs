@@ -1,3 +1,4 @@
+using Diplom.InfoSecurity;
 using DiplomInfo.DataBase;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,6 +22,7 @@ namespace Diplom
         {
             services.AddControllersWithViews();
             services.AddSingleton<FileRepository>();
+            services.AddSingleton<SecurityMediator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

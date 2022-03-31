@@ -23,7 +23,8 @@ namespace DiplomInfo.DataBase
                     AsymetricCode = "asd",
                     Hash = "dsa",
                     KeyDecrypt = "zxc",
-                    KeyEncrypt = "cxz"
+                    KeyEncrypt = "cxz",
+                    DateTime = DateTime.Now,
                 },
                 new FileDTO()
                 {
@@ -33,7 +34,7 @@ namespace DiplomInfo.DataBase
                     Hash = "dsa",
                     KeyDecrypt = "zxc",
                     KeyEncrypt = "cxz",
-
+                    DateTime = DateTime.Now,
                 },
                 new FileDTO()
                 {
@@ -44,6 +45,7 @@ namespace DiplomInfo.DataBase
                     Hash = "dsa",
                     KeyDecrypt = "zxc",
                     KeyEncrypt = "cxz",
+                    DateTime = DateTime.Now,
                 }
             };
         }
@@ -60,12 +62,12 @@ namespace DiplomInfo.DataBase
         {
             if (string.IsNullOrEmpty(query))
             {
-                return files.OrderBy(c => c.Id).Skip(skipCount).Take(count).ToList();
+                return files.OrderBy(c => c.DateTime).Skip(skipCount).Take(count).ToList();
             }
             else
             {
                 return files.Where(x => x.Name.Contains(query))
-                            .OrderBy(c => c.Id)
+                            .OrderBy(c => c.DateTime)
                             .Skip(skipCount).Take(count)
                             .ToList();
             }

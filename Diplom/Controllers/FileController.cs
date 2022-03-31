@@ -2,8 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Diplom.InfoSecurity;
 using Diplom.Models;
 using DiplomInfo.DataBase;
+using DiplomInfo.DataBase.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Diplom.Controllers
@@ -14,10 +16,12 @@ namespace Diplom.Controllers
     
     public class FileController : Controller
     {
-        private FileRepository _fileRepository;
-        public FileController(FileRepository fileRepository)
+        private readonly FileRepository _fileRepository;
+        private readonly SecurityMediator _securityMediator;
+        public FileController(FileRepository fileRepository, SecurityMediator securityMediator)
         {
             this._fileRepository = fileRepository;
+            this._securityMediator = securityMediator;
         }
         public IActionResult Index()
         {
@@ -32,7 +36,7 @@ namespace Diplom.Controllers
             {
                 Id = c.Id,
                 Name = c.Name,
-                Blob = c.Blob,
+                DateTme = c.DateTime,
             }).ToList();
             return View("ListFiles", model);
         }
@@ -41,7 +45,13 @@ namespace Diplom.Controllers
         public async Task<IActionResult> GetDataFile(Guid fileId)
         {
             var model = _fileRepository.GetFileById(fileId);
-            return View("DataFile", model);
+            model.AsymetricCode = _securityMediator.Encrypt(model.Blob, out byte[] encBytes, out string keyEncrypt);
+            model.KeyEncrypt = keyEncrypt;
+            
+            model.Hash = _securityMediator.CalculateSHA256Hash(model.Blob);
+            /*string asd = */_securityMediator.Decyrpt(encBytes, out string keyDecrypt);
+            model.KeyDecrypt = keyDecrypt;
+            return View("FileData", model);
         }
 
         public async Task<IActionResult> Upload()
@@ -51,21 +61,29 @@ namespace Diplom.Controllers
             {
                 return BadRequest();
             }
-            if (upload != null)
+
+            // получаем имя файла
+            string filePath = Path.GetFileName(upload.FileName);
+
+            var model = new FileDTO()
             {
-                // получаем имя файла
-                string filePath = Path.GetFileName(upload.FileName);
-                
-                if (upload.Length > 0)
+                Id = Guid.NewGuid(),
+                Name = filePath,
+                DateTime = DateTime.Now,
+            };
+            if (upload.Length > 0)
+            {
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await upload.CopyToAsync(stream);
-                        
-                    }
+                    await upload.CopyToAsync(stream);
                 }
             }
-
+            model.Blob = _securityMediator.GetBLOBFile(upload);
+            model.Hash = _securityMediator.CalculateSHA256Hash(model.Blob);
+            model.AsymetricCode = _securityMediator.Encrypt(model.Blob, out byte[] encBytes, out string keyEncrypt);
+            _securityMediator.Decyrpt(encBytes, out string keyDecrypt);
+            model.KeyEncrypt = keyEncrypt;
+            model.KeyDecrypt = keyDecrypt;
 
             return RedirectToAction("Index");
         }

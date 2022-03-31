@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Diplom.InfoSecurity\Diplom.InfoSecurity.csproj" />
     <ProjectReference Include="..\DiplomInfo.DataBase\DiplomInfo.DataBase.csproj" />
   </ItemGroup>
 

@@ -5,8 +5,8 @@
         <tr>
             <th scope="col">Номер</th>
             <th scope="col">Название</th>
-            <th scope="col">Blob</th>
-            @*<th scope="col">Цена</th>*@
+            <th scope="col">Дата</th>
+            <th scope="col">Время</th>
         </tr>
     </thead>
     <tbody>
@@ -16,8 +16,8 @@
                 <td>@(i+1)</td>
                 @*<td><a href="@Url.Action(nameof(InfoController.InfoProduct),"Info",new { id = Model[i].ProductId})">@Model[i].ProductTitle</a></td>*@
                 <td> <a href="@Url.Action(nameof(FileController.GetDataFile),"File", new {fileId = @Model[i].Id} )" > @Model[i].Name</a></td>
-                @*<a href="@Url.Action(nameof(FileController.GetDataFile),"File", @Model[i].Id)>*@
-                <td>@Model[i].Blob</td>
+                <td>@Model[i].DateTme.Date.ToString("dd/MM/yyyy")</td>
+                <td>@Model[i].DateTme.ToString("HH:mm:ss")</td>
                @* <td>
                     <form action="@Url.Action(nameof(InfoController.InfoProduct),"Info")">
                         <input type="hidden" name="id" value="@Model[i].ProductId"/>

@@ -8,6 +8,10 @@ namespace Diplom.Models
 
         public string Name { get; set; }
 
-        public string Blob { get; set; }
+        public DateTime DateTme { get; set; }
+
+        //public string KeyEncrypt { get; set; }
+        
+        //public string KeyDecrypt { get; set; }
     }
 }
