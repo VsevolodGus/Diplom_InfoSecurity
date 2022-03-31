@@ -14,7 +14,6 @@
         {
             <tr>
                 <td>@(i+1)</td>
-                @*<td><a href="@Url.Action(nameof(InfoController.InfoProduct),"Info",new { id = Model[i].ProductId})">@Model[i].ProductTitle</a></td>*@
                 <td> <a href="@Url.Action(nameof(FileController.GetDataFile),"File", new {fileId = @Model[i].Id} )" > @Model[i].Name</a></td>
                 <td>@Model[i].DateTme.Date.ToString("dd/MM/yyyy")</td>
                 <td>@Model[i].DateTme.ToString("HH:mm:ss")</td>

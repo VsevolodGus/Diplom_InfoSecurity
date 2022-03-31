@@ -41,7 +41,7 @@ namespace Diplom.Controllers
             return View("ListFiles", model);
         }
 
-
+        
         public async Task<IActionResult> GetDataFile(Guid fileId)
         {
             var model = _fileRepository.GetFileById(fileId);
@@ -54,38 +54,57 @@ namespace Diplom.Controllers
             return View("FileData", model);
         }
 
-        public async Task<IActionResult> Upload()
+
+        public async Task<IActionResult> Uploads()
         {
-            var upload = Request.Form.Files.FirstOrDefault();
-            if (upload is null)
-            {
-                return BadRequest();
-            }
+            var files = Request.Form.Files;
+            var uploadPath = Environment.CurrentDirectory + @"\uploads";
+            if (Directory.Exists(uploadPath)) 
+                Directory.CreateDirectory(uploadPath);
 
-            // получаем имя файла
-            string filePath = Path.GetFileName(upload.FileName);
-
-            var model = new FileDTO()
+            foreach (var file in files)
             {
-                Id = Guid.NewGuid(),
-                Name = filePath,
-                DateTime = DateTime.Now,
-            };
-            if (upload.Length > 0)
-            {
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                if (file.Length > 1024)
+                    continue;
+                string fullPath = uploadPath + @"\" + file.Name;
+                using (var fileStream = new FileStream(fullPath, FileMode.Create))
                 {
-                    await upload.CopyToAsync(stream);
+                    await file.CopyToAsync(fileStream);
                 }
             }
-            model.Blob = _securityMediator.GetBLOBFile(upload);
-            model.Hash = _securityMediator.CalculateSHA256Hash(model.Blob);
-            model.AsymetricCode = _securityMediator.Encrypt(model.Blob, out byte[] encBytes, out string keyEncrypt);
-            _securityMediator.Decyrpt(encBytes, out string keyDecrypt);
-            model.KeyEncrypt = keyEncrypt;
-            model.KeyDecrypt = keyDecrypt;
 
-            return RedirectToAction("Index");
+            #region  Comment
+            //var upload = Request.Form.Files.FirstOrDefault();
+            //if (upload is null)
+            //{
+            //    return BadRequest();
+            //}
+
+            //// получаем имя файла
+            //string filePath = Path.GetFileName(upload.FileName);
+
+            //var model = new FileDTO()
+            //{
+            //    Id = Guid.NewGuid(),
+            //    Name = filePath,
+            //    DateTime = DateTime.Now,
+            //};
+            //if (upload.Length > 0)
+            //{
+            //    using (var stream = new FileStream(filePath, FileMode.Create))
+            //    {
+            //        await upload.CopyToAsync(stream);
+            //    }
+            //}
+            //model.Blob = _securityMediator.GetBLOBFile(upload, filePath);
+            //model.Hash = _securityMediator.CalculateSHA256Hash(model.Blob);
+            //model.AsymetricCode = _securityMediator.Encrypt(model.Blob, out byte[] encBytes, out string keyEncrypt);
+            //_securityMediator.Decyrpt(encBytes, out string keyDecrypt);
+            //model.KeyEncrypt = keyEncrypt;
+            //model.KeyDecrypt = keyDecrypt;
+            #endregion
+
+            return await GetListDataFiles();
         }
     }
 }

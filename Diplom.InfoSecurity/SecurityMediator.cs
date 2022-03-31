@@ -54,8 +54,12 @@ namespace Diplom.InfoSecurity
             return sb.ToString();
         }
 
-        public string GetBLOBFile(IFormFile upload)
+        public string GetBLOBFile(IFormFile upload, string fileName)
         {
+            using (StreamWriter ads = new StreamWriter(Environment.CurrentDirectory + @"\files\" + fileName + ".txt"))
+            {
+
+            }
             using (var binaryReader = new BinaryReader(upload.OpenReadStream()))
             {
                 var fileData = binaryReader.ReadBytes((int)upload.Length);

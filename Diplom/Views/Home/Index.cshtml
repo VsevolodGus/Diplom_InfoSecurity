@@ -1,8 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<body>
+    <h2>Выберите файл для загрузки</h2>
+   <form action="@Url.Action(nameof(FileController.Uploads),"File")"
+                                                            method="post" enctype="multipart/form-data">
+        <input type="file" name="file.txt"/>
+        <input type="submit" value="Загрузить"/>
+    </form>
+</body>
