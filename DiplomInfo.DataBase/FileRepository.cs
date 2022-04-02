@@ -1,13 +1,12 @@
-﻿using DiplomInfo.DataBase.Models;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System;
+using DiplomInfo.DataBase.Models;
+using Diplom.Domain.IntarfaceRepository;
 
 namespace DiplomInfo.DataBase
 {
-    
-
-    public class FileRepository
+    public class FileRepository : IFileRepository
     {
         private readonly List<FileDTO> files;
 
@@ -51,7 +50,7 @@ namespace DiplomInfo.DataBase
         }
 
 
-        public bool AddFile(FileDTO model)
+        public bool Add(FileDTO model)
         {
             files.Add(model);
             // dc.SaveChanges();

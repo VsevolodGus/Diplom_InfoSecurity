@@ -7,6 +7,7 @@ using Diplom.Models;
 using DiplomInfo.DataBase;
 using DiplomInfo.DataBase.Models;
 using Microsoft.AspNetCore.Mvc;
+using Diplom.Utils;
 
 namespace Diplom.Controllers
 {
@@ -17,15 +18,11 @@ namespace Diplom.Controllers
     public class FileController : Controller
     {
         private readonly FileRepository _fileRepository;
-        private readonly SecurityMediator _securityMediator;
-        private readonly string _pathUploads;
-        private readonly string _pathWrite;
-        public FileController(FileRepository fileRepository, SecurityMediator securityMediator)
+        private readonly FileSecrityManager _securityMediator;
+        public FileController(FileRepository fileRepository, FileSecrityManager securityMediator)
         {
             this._fileRepository = fileRepository;
             this._securityMediator = securityMediator;
-            this._pathUploads = Environment.CurrentDirectory + @"\uploads";
-            this._pathWrite = Environment.CurrentDirectory + @"\encryptfiles";
         }
         public IActionResult Index()
         {
@@ -57,15 +54,15 @@ namespace Diplom.Controllers
         {
             var files = Request.Form.Files;
             
-            if (Directory.Exists(_pathUploads)) 
-                Directory.CreateDirectory(_pathUploads);
+            if (Directory.Exists(FilesUtils.DirectoryUploads)) 
+                Directory.CreateDirectory(FilesUtils.DirectoryUploads);
             
 
             foreach (var file in files)
             {
                 if (file.Length > 1024)
                     continue;
-                string fullPath = _pathUploads + @"\" + file.Name;
+                string fullPath = FilesUtils.DirectoryUploads + @"\" + file.Name;
                 using (var fileStream = new FileStream(fullPath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
@@ -83,13 +80,12 @@ namespace Diplom.Controllers
             var model = _fileRepository.GetFileById(id);
             var memory = new MemoryStream();
 
-            var pathFile = _pathWrite + @"\" + model.Name + ".txt";
+            var pathFile = FilesUtils.DirectoryDownload + @"\" + model.Name + ".txt";
             if (!System.IO.File.Exists(pathFile))
                 await _securityMediator.CreateNotExistsFile(model.Name, model.Text);
 
 
-
-            await using (var stream = new FileStream(_pathWrite + @"\" + model.Name + ".txt", FileMode.Open))
+            await using (var stream = new FileStream(FilesUtils.DirectoryDownload + @"\" + model.Name + ".txt", FileMode.Open))
             {
                 await stream.CopyToAsync(memory);
             }

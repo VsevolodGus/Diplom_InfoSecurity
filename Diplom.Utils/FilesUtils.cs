@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
-namespace Diplom.InfoSecurity
+namespace Diplom.Utils
 {
-    internal class WorkFile
-    {   
-        private readonly string _pathRead;
-        private readonly string _pathWrite;
-        private readonly IReadOnlyList<string> fileExtentions = new List<string>()
+    public static class FilesUtils
+    {
+        public static readonly string DirectoryUploads = Environment.CurrentDirectory + @"\uploads";
+        public static readonly string DirectoryDownload = Environment.CurrentDirectory + @"\encryptfiles";
+
+        private static readonly IReadOnlyList<string> fileExtentions = new List<string>()
         {
             ".txt",
             ".xlsx",
@@ -19,19 +21,12 @@ namespace Diplom.InfoSecurity
             ".jpg",
         };
 
-
-        public WorkFile(string pathRead, string pathWrite)
+        public static List<string> GetFilePathsFromUploads()
         {
-            this._pathRead = pathRead;
-            this._pathWrite = pathWrite;
+            return new List<string>(Directory.GetFiles(DirectoryUploads));
         }
 
-        public List<string> GetFiles()
-        {
-            return new List<string>(Directory.GetFiles(this._pathRead));
-        }
-
-        public string GetNameFile(string path)
+        public static string GetNameFile(string path)
         {
             var fileName = path.Split(@"\", System.StringSplitOptions.RemoveEmptyEntries).Last();
 
@@ -43,7 +38,7 @@ namespace Diplom.InfoSecurity
             return fileName;
         }
 
-        public async Task<string> ReadTextFromFile(string path)
+        public static  async Task<string> ReadTextFromFile(string path)
         {
             string result;
             using (var readre = new StreamReader(path))
@@ -54,10 +49,10 @@ namespace Diplom.InfoSecurity
             return result;
         }
 
-        public async Task CreateFile(string path, string encrypttext)
+        public static async Task CreateFile(string path, string encrypttext)
         {
             var fileName = GetNameFile(path);
-            var filePath = _pathWrite + @"\" +fileName + ".txt";
+            var filePath = DirectoryDownload + @"\" +fileName + ".txt";
             if (!File.Exists(filePath))
                 File.Create(filePath);
 

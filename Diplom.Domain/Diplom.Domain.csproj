@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Diplom.Domain\Diplom.Domain.csproj" />
+    <ProjectReference Include="..\Diplom.Utils\Diplom.Utils.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,25 +1,15 @@
 ﻿using System.Text;
 using System.Security.Cryptography;
-using System;
-using System.IO;
-using Microsoft.AspNetCore.Http;
 
-namespace Diplom.InfoSecurity
+namespace Diplom.Utils
 {
-    internal class SecurityService
+    public static class SecurityUtils
     {
-        private readonly RSACryptoServiceProvider _RSA;
-        private readonly UnicodeEncoding _byteConverter;
-        private readonly RSAParameters privateKey;
-        private readonly RSAParameters publicKey;
+        private static readonly RSACryptoServiceProvider _RSA = new RSACryptoServiceProvider();
+        private static readonly UnicodeEncoding _byteConverter = new UnicodeEncoding();
+        //private static readonly RSAParameters privateKey;
+        //private static readonly RSAParameters publicKey;
 
-        public SecurityService()
-        {
-            this._RSA = new RSACryptoServiceProvider();
-            this.publicKey = _RSA.ExportParameters(true);
-            this.privateKey = _RSA.ExportParameters(false);
-            this._byteConverter = new UnicodeEncoding();
-        }
         public static byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
         {
             //Create a new instance of RSACryptoServiceProvider.
@@ -50,23 +40,28 @@ namespace Diplom.InfoSecurity
             return RSA.Decrypt(DataToDecrypt, DoOAEPPadding);
         }
 
-        public string Encrypt(string input, out byte[] encBytes, out string encKey)
+        public static string Encrypt(string input, out byte[] encBytes, out string encKey)
         {
+            var publicKey = _RSA.ExportParameters(true);
+
             encKey = _byteConverter.GetString(publicKey.P);
-            encBytes = SecurityService.RSAEncrypt(_byteConverter.GetBytes(input), publicKey, false);
+            encBytes = SecurityUtils.RSAEncrypt(_byteConverter.GetBytes(input), publicKey, false);
             var encrypt = _byteConverter.GetString(encBytes);
             return encrypt;
         }
 
-        public string Decyrpt(byte[] encBytes, out string decKey)
+        public static string Decyrpt(byte[] encBytes, out string decKey)
         {
+            var publicKey = _RSA.ExportParameters(true);
+            var privateKey = _RSA.ExportParameters(false);
+
             decKey = _byteConverter.GetString(publicKey.Modulus);
-            byte[] decBytes = SecurityService.RSADecrypt(encBytes, publicKey, false);
+            byte[] decBytes = SecurityUtils.RSADecrypt(encBytes, publicKey, false);
             var decrypt = _byteConverter.GetString(decBytes);
             return decrypt;
         }
 
-        public string CalculateMD5Hash(string input)
+        public static string CalculateMD5Hash(string input)
         {
             // step 1, calculate MD5 hash from input
             MD5 md5 = MD5.Create();
