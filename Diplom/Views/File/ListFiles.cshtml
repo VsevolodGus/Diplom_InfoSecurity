@@ -17,12 +17,12 @@
                 <td> <a href="@Url.Action(nameof(FileController.GetDataFile),"File", new {fileId = @Model[i].Id} )" > @Model[i].Name</a></td>
                 <td>@Model[i].DateTme.Date.ToString("dd/MM/yyyy")</td>
                 <td>@Model[i].DateTme.ToString("HH:mm:ss")</td>
-               @* <td>
-                    <form action="@Url.Action(nameof(InfoController.InfoProduct),"Info")">
-                        <input type="hidden" name="id" value="@Model[i].ProductId"/>
-                        <button class="btn btn-success" type="submit">Подробнее о продукте</button>
+                <td>
+                    <form action="@Url.Action(nameof(FileController.DownloadFile),"File", Model[i].Id)">
+                        <input type="hidden" name="id" value="@Model[i].Id"/>
+                        <button class="btn btn-success" type="submit">Скачать файл</button>
                     </form>
-                </td>*@
+                </td>
             </tr>
         }
     </tbody>

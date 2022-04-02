@@ -5,7 +5,7 @@
     <h2>Выберите файл для загрузки</h2>
    <form action="@Url.Action(nameof(FileController.Uploads),"File")"
                                                             method="post" enctype="multipart/form-data">
-        <input type="file" name="file.txt"/>
+        <input type="file" name ="file.txt"/>
         <input type="submit" value="Загрузить"/>
     </form>
 </body>

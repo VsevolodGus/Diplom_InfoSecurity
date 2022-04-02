@@ -1,12 +1,12 @@
 ﻿@model FileDTO
 
 <p><strong>Название:</strong>@Model.Name</p>
-<p><strong>Blob:</strong><a>@Model.Blob</a></p>
+<p><strong>Blob:</strong><a>@Model.Text</a></p>
 <p><strong>Хэш:</strong>@Model.Hash</p>
 <p><strong>Шифр:</strong>@Model.AsymetricCode</p>
-<p><strong>Ключ шифровки:</strong>@Model.KeyEncrypt</p>
-<p><strong>Ключ дешифровки:</strong>@Model.KeyDecrypt</p>
-@*<form action="@Url.Action(nameof(OrderController.AddItem),"Order")" method="post">
-    <input type="hidden" name="id" value="@Model.ProductId" />
-    <button class=" btn btn-success" type="submit">Добавить в корзину</button>
-</form>*@
+@*<p><strong>Ключ шифровки:</strong>@Model.KeyEncrypt</p>
+<p><strong>Ключ дешифровки:</strong>@Model.KeyDecrypt</p>*@
+<form action="@Url.Action(nameof(FileController.DownloadFile),"File")" method="get">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <button class=" btn btn-success" type="submit">Скачать</button>
+</form>

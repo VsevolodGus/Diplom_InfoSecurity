@@ -18,10 +18,14 @@ namespace Diplom.Controllers
     {
         private readonly FileRepository _fileRepository;
         private readonly SecurityMediator _securityMediator;
+        private readonly string _pathUploads;
+        private readonly string _pathWrite;
         public FileController(FileRepository fileRepository, SecurityMediator securityMediator)
         {
             this._fileRepository = fileRepository;
             this._securityMediator = securityMediator;
+            this._pathUploads = Environment.CurrentDirectory + @"\uploads";
+            this._pathWrite = Environment.CurrentDirectory + @"\encryptfiles";
         }
         public IActionResult Index()
         {
@@ -45,12 +49,6 @@ namespace Diplom.Controllers
         public async Task<IActionResult> GetDataFile(Guid fileId)
         {
             var model = _fileRepository.GetFileById(fileId);
-            model.AsymetricCode = _securityMediator.Encrypt(model.Blob, out byte[] encBytes, out string keyEncrypt);
-            model.KeyEncrypt = keyEncrypt;
-            
-            model.Hash = _securityMediator.CalculateSHA256Hash(model.Blob);
-            /*string asd = */_securityMediator.Decyrpt(encBytes, out string keyDecrypt);
-            model.KeyDecrypt = keyDecrypt;
             return View("FileData", model);
         }
 
@@ -58,53 +56,48 @@ namespace Diplom.Controllers
         public async Task<IActionResult> Uploads()
         {
             var files = Request.Form.Files;
-            var uploadPath = Environment.CurrentDirectory + @"\uploads";
-            if (Directory.Exists(uploadPath)) 
-                Directory.CreateDirectory(uploadPath);
+            
+            if (Directory.Exists(_pathUploads)) 
+                Directory.CreateDirectory(_pathUploads);
+            
 
             foreach (var file in files)
             {
                 if (file.Length > 1024)
                     continue;
-                string fullPath = uploadPath + @"\" + file.Name;
+                string fullPath = _pathUploads + @"\" + file.Name;
                 using (var fileStream = new FileStream(fullPath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
                 }
             }
 
-            #region  Comment
-            //var upload = Request.Form.Files.FirstOrDefault();
-            //if (upload is null)
-            //{
-            //    return BadRequest();
-            //}
-
-            //// получаем имя файла
-            //string filePath = Path.GetFileName(upload.FileName);
-
-            //var model = new FileDTO()
-            //{
-            //    Id = Guid.NewGuid(),
-            //    Name = filePath,
-            //    DateTime = DateTime.Now,
-            //};
-            //if (upload.Length > 0)
-            //{
-            //    using (var stream = new FileStream(filePath, FileMode.Create))
-            //    {
-            //        await upload.CopyToAsync(stream);
-            //    }
-            //}
-            //model.Blob = _securityMediator.GetBLOBFile(upload, filePath);
-            //model.Hash = _securityMediator.CalculateSHA256Hash(model.Blob);
-            //model.AsymetricCode = _securityMediator.Encrypt(model.Blob, out byte[] encBytes, out string keyEncrypt);
-            //_securityMediator.Decyrpt(encBytes, out string keyDecrypt);
-            //model.KeyEncrypt = keyEncrypt;
-            //model.KeyDecrypt = keyDecrypt;
-            #endregion
+            await _securityMediator.SaveFilesToRepositroty();
 
             return await GetListDataFiles();
+        }
+
+        [HttpGet, DisableRequestSizeLimit]
+        public async Task<IActionResult> DownloadFile(Guid id)
+        {
+            var model = _fileRepository.GetFileById(id);
+            var memory = new MemoryStream();
+
+            var pathFile = _pathWrite + @"\" + model.Name + ".txt";
+            if (!System.IO.File.Exists(pathFile))
+                await _securityMediator.CreateNotExistsFile(model.Name, model.Text);
+
+
+
+            await using (var stream = new FileStream(_pathWrite + @"\" + model.Name + ".txt", FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            //set correct content type here
+            return File(memory, "application/octet-stream", model.Name + ".sig");
+
+
         }
     }
 }

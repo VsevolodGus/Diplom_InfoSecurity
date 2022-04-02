@@ -8,4 +8,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.15" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DiplomInfo.DataBase\DiplomInfo.DataBase.csproj" />
+  </ItemGroup>
+
 </Project>

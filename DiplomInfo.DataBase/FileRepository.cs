@@ -19,7 +19,7 @@ namespace DiplomInfo.DataBase
                 {
                     Id = Guid.NewGuid(),
                     Name = "File1",
-                    Blob = "11111",
+                    Text = "11111",
                     AsymetricCode = "asd",
                     Hash = "dsa",
                     KeyDecrypt = "zxc",
@@ -30,7 +30,7 @@ namespace DiplomInfo.DataBase
                 {
                     Id = Guid.NewGuid(),
                     Name = "File2",
-                    Blob = "22222",AsymetricCode = "asd",
+                    Text = "22222",AsymetricCode = "asd",
                     Hash = "dsa",
                     KeyDecrypt = "zxc",
                     KeyEncrypt = "cxz",
@@ -40,7 +40,7 @@ namespace DiplomInfo.DataBase
                 {
                     Id = Guid.NewGuid(),
                     Name = "File3",
-                    Blob = "33333",
+                    Text = "33333",
                     AsymetricCode = "asd",
                     Hash = "dsa",
                     KeyDecrypt = "zxc",
