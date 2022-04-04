@@ -9,13 +9,13 @@ namespace DiplomInfo.DataBase
 
     public class FileRepository
     {
-        private readonly List<FileDTO> files;
+        private readonly List<FileEntity> files;
 
         public FileRepository()
         {
-            this.files = new List<FileDTO>()
+            this.files = new List<FileEntity>()
             {
-                new FileDTO()
+                new FileEntity()
                 {
                     Id = Guid.NewGuid(),
                     Name = "File1",
@@ -26,7 +26,7 @@ namespace DiplomInfo.DataBase
                     KeyEncrypt = "cxz",
                     DateTime = DateTime.Now,
                 },
-                new FileDTO()
+                new FileEntity()
                 {
                     Id = Guid.NewGuid(),
                     Name = "File2",
@@ -36,7 +36,7 @@ namespace DiplomInfo.DataBase
                     KeyEncrypt = "cxz",
                     DateTime = DateTime.Now,
                 },
-                new FileDTO()
+                new FileEntity()
                 {
                     Id = Guid.NewGuid(),
                     Name = "File3",
@@ -51,14 +51,18 @@ namespace DiplomInfo.DataBase
         }
 
 
+<<<<<<< Updated upstream
         public bool AddFile(FileDTO model)
+=======
+        public bool Add(FileEntity model)
+>>>>>>> Stashed changes
         {
             files.Add(model);
             // dc.SaveChanges();
             return true;
         }
 
-        public List<FileDTO> GetFiles(string query, int skipCount, int count)
+        public List<FileEntity> GetFiles(string query, int skipCount, int count)
         {
             if (string.IsNullOrEmpty(query))
             {
@@ -74,7 +78,7 @@ namespace DiplomInfo.DataBase
         }
 
 
-        public FileDTO GetFileById(Guid id)
+        public FileEntity GetFileById(Guid id)
         {
             var model = files.First(c => c.Id == id);
             return model;
