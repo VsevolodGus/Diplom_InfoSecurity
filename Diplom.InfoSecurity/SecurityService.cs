@@ -13,7 +13,6 @@ namespace Diplom.InfoSecurity
         private readonly RSAParameters privateKey;
         private readonly RSAParameters publicKey;
 
-<<<<<<< Updated upstream:Diplom.InfoSecurity/SecurityService.cs
         public SecurityService()
         {
             this._RSA = new RSACryptoServiceProvider();
@@ -22,9 +21,6 @@ namespace Diplom.InfoSecurity
             this._byteConverter = new UnicodeEncoding();
         }
         public static byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
-=======
-        private static byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
->>>>>>> Stashed changes:Diplom.Utils/SecurityUtils.cs
         {
             //Create a new instance of RSACryptoServiceProvider.
             var RSA = new RSACryptoServiceProvider();
@@ -39,7 +35,7 @@ namespace Diplom.InfoSecurity
             return RSA.Encrypt(DataToEncrypt, DoOAEPPadding);
         }
 
-        private static byte[] RSADecrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
+        public static byte[] RSADecrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
         {
             //Create a new instance of RSACryptoServiceProvider.
             var RSA = new RSACryptoServiceProvider();
