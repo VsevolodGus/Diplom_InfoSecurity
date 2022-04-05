@@ -3,9 +3,19 @@
 }
 <body>
     <h2>Выберите файл для загрузки</h2>
-   <form action="@Url.Action(nameof(FileController.Uploads),"File")"
-                                                            method="post" enctype="multipart/form-data">
-        <input type="file" name ="file.txt"/>
-        <input type="submit" value="Загрузить"/>
+    
+   <form method="post" action="@Url.Action(nameof(FileController.Uploads),"File")" enctype="multipart/form-data">
+        <input id="file" type="file" name ="file.txt"/>
+        <input type="submit" value="Загрузить" action="@Url.Action(nameof(FileController.Uploads),"File")"/>
     </form>
+
+    <script> 
+        const file = document.getElementById("file")
+
+        file.addEventListener('change', function (e) {
+            const filePathArray = this.value.split("\\");
+            const inputName = filePathArray[filePathArray.length - 1];
+            this.setAttribute("name", inputName)
+        })
+  </script>
 </body>

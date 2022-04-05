@@ -15,4 +15,8 @@
     <ProjectReference Include="..\Diplom.InfoSecurity\Diplom.InfoSecurity.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Home\js\" />
+  </ItemGroup>
+
 </Project>
