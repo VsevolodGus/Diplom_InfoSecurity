@@ -80,7 +80,10 @@ namespace DiplomInfo.DataBase
             return model;
         }
 
-
+        public bool IsExsistsFileByTitle(string name)
+        {
+            return files.Any(c => c.Name == name);
+        }
 
     }
 }

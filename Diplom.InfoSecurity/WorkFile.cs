@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
+using System;
 
 namespace Diplom.InfoSecurity
 {
@@ -61,11 +62,32 @@ namespace Diplom.InfoSecurity
             if (!File.Exists(filePath))
                 File.Create(filePath);
 
+            while (IsLocked(filePath))
+                continue;
+
             using (var writer = new StreamWriter(filePath))
             {
                 await writer.WriteLineAsync(encrypttext);
             }
         }
 
+        public bool IsLocked(string fileName)
+        {
+            try
+            {
+                using (FileStream fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    fs.Close();
+                    // Здесь вызываем свой метод, работаем с файлом
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.HResult == -2147024894)
+                    return false;
+            }
+            return true;
+        }
     }
 }

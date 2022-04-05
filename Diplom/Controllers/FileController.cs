@@ -65,13 +65,17 @@ namespace Diplom.Controllers
             {
                 if (file.Length > 1024)
                     continue;
+
+                if (_fileRepository.IsExsistsFileByTitle(file.Name.Split(".",StringSplitOptions.RemoveEmptyEntries).First()))
+                    continue;
+
                 string fullPath = _pathUploads + @"\" + file.Name;
                 using (var fileStream = new FileStream(fullPath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
                 }
             }
-
+            Request.Form = null;
             await _securityMediator.SaveFilesToRepositroty();
 
             return await GetListDataFiles();

@@ -5,9 +5,9 @@ VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diplom", "Diplom\Diplom.csproj", "{80033377-EF98-4449-9063-4744E9BF1832}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiplomInfo.DataBase", "DiplomInfo.DataBase\DiplomInfo.DataBase.csproj", "{74ADA67B-B8A1-41C3-BDC8-D121BFEC7334}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiplomInfo.DataBase", "DiplomInfo.DataBase\DiplomInfo.DataBase.csproj", "{74ADA67B-B8A1-41C3-BDC8-D121BFEC7334}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diplom.InfoSecurity", "Diplom.InfoSecurity\Diplom.InfoSecurity.csproj", "{C57BA9AE-21EF-459B-AD1B-864D349A6FE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diplom.InfoSecurity", "Diplom.InfoSecurity\Diplom.InfoSecurity.csproj", "{C57BA9AE-21EF-459B-AD1B-864D349A6FE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

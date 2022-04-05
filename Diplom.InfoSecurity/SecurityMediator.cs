@@ -25,11 +25,15 @@ namespace Diplom.InfoSecurity
 
             foreach (var file in files)
             {
+                var fileName = _workFile.GetNameFile(file);
+                if (_fileRepository.IsExsistsFileByTitle(fileName))
+                    continue;
+
                 var text = await _workFile.ReadTextFromFile(file);
                 var dataItem = new FileDTO()
                 {
                     Id = Guid.NewGuid(),
-                    Name = _workFile.GetNameFile(file),
+                    Name = fileName,
                     Text = text,
                     DateTime = DateTime.UtcNow,
                     Hash = _securityService.CalculateMD5Hash(text),
@@ -49,7 +53,9 @@ namespace Diplom.InfoSecurity
         public async Task CreateNotExistsFile(string fileName, string text)
         {
             var encryptText = _securityService.Encrypt(text, out byte[] encBytes, out string encKey);
-            await _workFile.CreateFile(text, encryptText);
+            var listFiles = _workFile.GetFiles();
+            if(!listFiles.Contains(fileName))
+                await _workFile.CreateFile(fileName, encryptText);
         }
     }
 }
