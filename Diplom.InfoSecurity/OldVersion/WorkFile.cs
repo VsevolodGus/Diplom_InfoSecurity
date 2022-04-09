@@ -10,16 +10,6 @@ namespace Diplom.InfoSecurity
     {   
         private readonly string _pathRead;
         private readonly string _pathWrite;
-        private readonly IReadOnlyList<string> fileExtentions = new List<string>()
-        {
-            ".txt",
-            ".xlsx",
-            ".csv",
-            ".bin",
-            ".dox",
-            ".jpg",
-        };
-
 
         public WorkFile(string pathRead, string pathWrite)
         {
@@ -27,24 +17,28 @@ namespace Diplom.InfoSecurity
             this._pathWrite = pathWrite;
         }
 
-        public List<string> GetFiles()
+        #region Get
+        public List<string> GetPathFiles()
         {
             return new List<string>(Directory.GetFiles(this._pathRead));
         }
 
-        public string GetNameFile(string path)
+        public string GetNameFile(string path, bool withExtension = true)
         {
             var fileName = path.Split(@"\", System.StringSplitOptions.RemoveEmptyEntries).Last();
 
-            foreach (var item in fileExtentions)
+            if (!withExtension)
             {
-                fileName = fileName.Replace(item, "");
+                foreach (var item in Utils.FileExtentions)
+                {
+                    fileName = fileName.Replace(item, "");
+                }
             }
 
             return fileName;
         }
 
-        public async Task<string> ReadTextFromFile(string path)
+        public async Task<string> GetTextFromFile(string path)
         {
             string result;
             using (var readre = new StreamReader(path))
@@ -54,11 +48,13 @@ namespace Diplom.InfoSecurity
 
             return result;
         }
+        #endregion
+
 
         public async Task CreateFile(string path, string encrypttext)
         {
             var fileName = GetNameFile(path);
-            var filePath = _pathWrite + @"\" +fileName + ".txt";
+            var filePath = _pathWrite + @"\" +fileName;
             if (!File.Exists(filePath))
                 File.Create(filePath);
 
@@ -71,7 +67,7 @@ namespace Diplom.InfoSecurity
             }
         }
 
-        public bool IsLocked(string fileName)
+        private bool IsLocked(string fileName)
         {
             try
             {

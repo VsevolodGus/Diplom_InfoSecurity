@@ -32,7 +32,7 @@ namespace Diplom.Controllers
             return View();
         }
 
-
+        #region Получение данных
         public async Task<IActionResult> GetListDataFiles(string query = "", int skipCount = 0, int count = 10)
         {
             var files = _fileRepository.GetFiles(query, skipCount, count);
@@ -51,8 +51,9 @@ namespace Diplom.Controllers
             var model = _fileRepository.GetFileById(fileId);
             return View("FileData", model);
         }
+        #endregion
 
-
+        #region Работа с данными
         public async Task<IActionResult> Uploads()
         {
             var files = Request.Form.Files;
@@ -81,15 +82,18 @@ namespace Diplom.Controllers
             return await GetListDataFiles();
         }
 
+
+        
         [HttpGet, DisableRequestSizeLimit]
         public async Task<IActionResult> DownloadFile(Guid id)
         {
             var model = _fileRepository.GetFileById(id);
             var memory = new MemoryStream();
 
-            var pathFile = _pathWrite + @"\" + model.Name + ".txt";
+            var pathFile = _pathWrite + @"\" + model.Name;
+
             if (!System.IO.File.Exists(pathFile))
-                await _securityMediator.CreateNotExistsFile(model.Name, model.Text);
+                await _securityMediator.CreateNotExistsFile(model.Name, model.Text, id);
 
 
 
@@ -103,5 +107,17 @@ namespace Diplom.Controllers
 
 
         }
+        #endregion
+
+        #region Получение расшифровки
+        public async Task<IActionResult> GetDecryptText(Guid fileId)
+        {
+            
+            var decryptText = await _securityMediator.GetDecryptText(fileId);
+
+
+            return View("Index");
+        }
+        #endregion
     }
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using DiplomInfo.DataBase;
 using DiplomInfo.DataBase.Models;
 
+
 namespace Diplom.InfoSecurity
 {
     public class SecurityMediator
@@ -14,14 +15,15 @@ namespace Diplom.InfoSecurity
         {
             string pathRead = Environment.CurrentDirectory + @"\uploads";
             string pathWrite = Environment.CurrentDirectory + @"\encryptfiles";
-
             _workFile = new WorkFile(pathRead, pathWrite);
             _securityService = new SecurityService();
             _fileRepository = fileRepository;
         }
+
+
         public async Task SaveFilesToRepositroty()
         {
-            var files = _workFile.GetFiles();
+            var files = _workFile.GetPathFiles();
 
             foreach (var file in files)
             {
@@ -29,20 +31,21 @@ namespace Diplom.InfoSecurity
                 if (_fileRepository.IsExsistsFileByTitle(fileName))
                     continue;
 
-                var text = await _workFile.ReadTextFromFile(file);
+                #region Сохранение в базу
+                var text = await _workFile.GetTextFromFile(file);
+                var newId = Guid.NewGuid();
                 var dataItem = new FileDTO()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = newId,
                     Name = fileName,
                     Text = text,
                     DateTime = DateTime.UtcNow,
                     Hash = _securityService.CalculateMD5Hash(text),
-                    KeyDecrypt = "",
-                    KeyEncrypt ="",
-                    AsymetricCode = _securityService.Encrypt(text, out byte[] encBytes, out string keyEncrypt),
+                    AsymetricCode = _securityService.Encrypt(text, out byte[] encBytes, newId),
+                    EncBytes = encBytes,
                 };
-
                 _fileRepository.AddFile(dataItem);
+                #endregion
 
                 // сразу создается файл под с зашифрованными данными
                 await _workFile.CreateFile(file, dataItem.AsymetricCode);
@@ -50,12 +53,21 @@ namespace Diplom.InfoSecurity
         }
 
 
-        public async Task CreateNotExistsFile(string fileName, string text)
+        public async Task CreateNotExistsFile(string fileName, string text, Guid fileId)
         {
-            var encryptText = _securityService.Encrypt(text, out byte[] encBytes, out string encKey);
-            var listFiles = _workFile.GetFiles();
+            var encryptText = _securityService.Encrypt(text, out byte[] encBytes, fileId);
+            var listFiles = _workFile.GetPathFiles();
             if(!listFiles.Contains(fileName))
                 await _workFile.CreateFile(fileName, encryptText);
+        }
+
+
+
+        public async Task<string> GetDecryptText(Guid fileId)
+        {
+            var model = _fileRepository.GetFileById(fileId);
+            var text = _securityService.Decyrpt(model.EncBytes, fileId);
+            return text;
         }
     }
 }

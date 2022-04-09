@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DiplomInfo.DataBase.Models
 {
@@ -23,5 +19,7 @@ namespace DiplomInfo.DataBase.Models
         public string KeyDecrypt { get; set; }
 
         public DateTime DateTime { get; init; }
+
+        public byte[] EncBytes { get; set; }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System.Text;
 using System.Security.Cryptography;
 using System;
-using System.IO;
-using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace Diplom.InfoSecurity
 {
@@ -10,16 +9,19 @@ namespace Diplom.InfoSecurity
     {
         private readonly RSACryptoServiceProvider _RSA;
         private readonly UnicodeEncoding _byteConverter;
-        private readonly RSAParameters privateKey;
-        private readonly RSAParameters publicKey;
 
         public SecurityService()
         {
             this._RSA = new RSACryptoServiceProvider();
-            this.publicKey = _RSA.ExportParameters(true);
-            this.privateKey = _RSA.ExportParameters(false);
             this._byteConverter = new UnicodeEncoding();
         }
+
+
+
+
+        #region Шифрование дешифрование
+        
+        #region Static 
         public static byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
         {
             //Create a new instance of RSACryptoServiceProvider.
@@ -49,29 +51,40 @@ namespace Diplom.InfoSecurity
             //later.  
             return RSA.Decrypt(DataToDecrypt, DoOAEPPadding);
         }
+        #endregion
 
-        public string Encrypt(string input, out byte[] encBytes, out string encKey)
+        public string Encrypt(string input, out byte[] encBytes, Guid fileId)
         {
-            encKey = _byteConverter.GetString(publicKey.P);
-            encBytes = SecurityService.RSAEncrypt(_byteConverter.GetBytes(input), publicKey, false);
+            var publicKey = _RSA.ExportParameters(true);
+            encBytes = RSAEncrypt(_byteConverter.GetBytes(input), publicKey, false);
             var encrypt = _byteConverter.GetString(encBytes);
+
+            Utils.DataFile.Add(new KeyModel()
+            {
+                FileId = fileId,
+                Key = publicKey,
+            });
+
             return encrypt;
         }
 
-        public string Decyrpt(byte[] encBytes, out string decKey)
+        public string Decyrpt(byte[] encBytes, Guid fileId)
         {
-            decKey = _byteConverter.GetString(publicKey.Modulus);
-            byte[] decBytes = SecurityService.RSADecrypt(encBytes, publicKey, false);
+            var data = Utils.DataFile.FirstOrDefault(c => c.FileId == fileId);
+            byte[] decBytes = RSADecrypt(encBytes, data.Key, false);
             var decrypt = _byteConverter.GetString(decBytes);
             return decrypt;
         }
+        #endregion
 
+
+        #region Хеширование
         public string CalculateMD5Hash(string input)
         {
             // step 1, calculate MD5 hash from input
             MD5 md5 = MD5.Create();
-            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-            byte[] hash = md5.ComputeHash(inputBytes);
+            var inputBytes = Encoding.ASCII.GetBytes(input);
+            var hash = md5.ComputeHash(inputBytes);
 
             // step 2, convert byte array to hex string
             var sb = new StringBuilder();
@@ -81,5 +94,6 @@ namespace Diplom.InfoSecurity
             }
             return sb.ToString();
         }
+        #endregion
     }
 }
