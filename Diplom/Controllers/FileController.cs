@@ -64,6 +64,15 @@ namespace Diplom.Controllers
         #region Работа с данными
         public async Task<IActionResult> Uploads(string firstName, string secondName, string thirdName)
         {
+            if (firstName is null)
+                firstName = "";
+
+            if (secondName is null)
+                secondName = "";
+
+            if (thirdName is null)
+                thirdName = "";
+
             var files = Request.Form.Files;
             
             if (Directory.Exists(_pathUploads)) 

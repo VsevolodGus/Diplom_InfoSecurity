@@ -54,14 +54,11 @@ namespace Diplom.InfoSecurity
         public async Task CreateFile(string path, string encrypttext)
         {
             var fileName = GetNameFile(path);
-            var filePath = _pathWrite + @"\" +fileName;
+            var filePath = _pathWrite + @"\" + fileName;
             if (!File.Exists(filePath))
-            {
                 File.Create(filePath);
-            }
 
-
-            while (IsLocked(filePath))
+            while (!IsLocked(filePath))
                 continue;
 
             using (var writer = new StreamWriter(filePath))
@@ -70,16 +67,16 @@ namespace Diplom.InfoSecurity
             }
         }
 
-        private bool IsLocked(string fileName)
+        private static bool IsLocked(string fileName)
         {
             try
             {
                 using (FileStream fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.None))
                 {
                     fs.Close();
+                    // Здесь вызываем свой метод, работаем с файлом
+                    return false;
                 }
-
-                return false;
             }
             catch (Exception ex)
             {
