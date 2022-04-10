@@ -20,12 +20,13 @@ namespace Diplom.Controllers
         private readonly SecurityMediator _securityMediator;
         private readonly string _pathUploads;
         private readonly string _pathWrite;
-        public FileController(FileRepository fileRepository, SecurityMediator securityMediator)
+        public FileController(FileRepository fileRepository)
         {
             this._fileRepository = fileRepository;
-            this._securityMediator = securityMediator;
             this._pathUploads = Environment.CurrentDirectory + @"\uploads";
             this._pathWrite = Environment.CurrentDirectory + @"\encryptfiles";
+            this._securityMediator = new SecurityMediator(_fileRepository, _pathUploads, _pathWrite);
+            _securityMediator.AddInRepositoryExiststFiles().Wait();
         }
         public IActionResult Index()
         {
@@ -96,27 +97,27 @@ namespace Diplom.Controllers
                 await _securityMediator.CreateNotExistsFile(model.Name, model.Text, id);
 
 
-
-            await using (var stream = new FileStream(_pathWrite + @"\" + model.Name + ".txt", FileMode.Open))
+            
+            await using (var stream = new FileStream(_pathWrite + @"\" + model.Name, FileMode.Open))
             {
                 await stream.CopyToAsync(memory);
             }
             memory.Position = 0;
             //set correct content type here
-            return File(memory, "application/octet-stream", model.Name + ".sig");
+            return File(memory, "application/octet-stream", model.Name.Split('.')[0] + ".sig");
 
 
         }
         #endregion
 
         #region Получение расшифровки
-        public async Task<IActionResult> GetDecryptText(Guid fileId)
+        public async Task<IActionResult> GetDecryptText(Guid id)
         {
             
-            var decryptText = await _securityMediator.GetDecryptText(fileId);
+            var decryptText = await _securityMediator.GetDecryptText(id);
 
 
-            return View("Index");
+            return View("DecryptText", decryptText);
         }
         #endregion
     }

@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace Diplom.InfoSecurity
 {
-    public struct KeyModel
+    public class KeyModel
     {
         public Guid FileId { get; set; }
         public RSAParameters Key { get; set; }
