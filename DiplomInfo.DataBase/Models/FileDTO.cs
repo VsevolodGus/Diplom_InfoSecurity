@@ -14,10 +14,6 @@ namespace DiplomInfo.DataBase.Models
 
         public string AsymetricCode { get; set; }
 
-        public string KeyEncrypt { get; set; }
-
-        public string KeyDecrypt { get; set; }
-
         public DateTime DateTime { get; init; }
 
         public byte[] EncBytes { get; set; }

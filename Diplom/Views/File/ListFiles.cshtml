@@ -9,6 +9,7 @@
             <th scope="col">Время</th>
             <th scope="col">Скачать файл</th>
             <th scope="col">Получить расшифроку</th>
+            <th scope="col">Показать данные</th>
         </tr>
     </thead>
     <tbody>
@@ -28,6 +29,12 @@
                 <td>
                     <form action="@Url.Action(nameof(FileController.GetDecryptText),"File", Model[i].Id)">
                         <input type="hidden" name="id" value="@Model[i].Id"/>
+                        <button class="btn btn-success" type="submit">Получить</button>
+                    </form>
+                </td>
+                <td>
+                    <form action="@Url.Action(nameof(FileController.GetDataFile),"File")">
+                        <input type="hidden" name="fileId" value="@Model[i].Id"/>
                         <button class="btn btn-success" type="submit">Показать</button>
                     </form>
                 </td>
