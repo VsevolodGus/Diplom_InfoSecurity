@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiplomInfo.DataBase.Models;
+using System;
 
 namespace Diplom.Models
 {
@@ -9,5 +10,13 @@ namespace Diplom.Models
         public string Name { get; set; }
 
         public DateTime DateTme { get; set; }
+
+        public User User { get; set; } = new User()
+        {
+            Id = Guid.NewGuid(),
+            FirstName = "",
+            SecondName = "",
+            ThirdName= ""
+        };
     }
 }

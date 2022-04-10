@@ -17,5 +17,7 @@ namespace DiplomInfo.DataBase.Models
         public DateTime DateTime { get; init; }
 
         public byte[] EncBytes { get; set; }
+
+        public User User { get; set; }
     }
 }

@@ -56,7 +56,10 @@ namespace Diplom.InfoSecurity
             var fileName = GetNameFile(path);
             var filePath = _pathWrite + @"\" +fileName;
             if (!File.Exists(filePath))
+            {
                 File.Create(filePath);
+            }
+
 
             while (IsLocked(filePath))
                 continue;
@@ -74,9 +77,9 @@ namespace Diplom.InfoSecurity
                 using (FileStream fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.None))
                 {
                     fs.Close();
-                    // Здесь вызываем свой метод, работаем с файлом
-                    return false;
                 }
+
+                return false;
             }
             catch (Exception ex)
             {

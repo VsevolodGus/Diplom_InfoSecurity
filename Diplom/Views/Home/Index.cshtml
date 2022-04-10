@@ -7,7 +7,11 @@
    <form method="post" action="@Url.Action(nameof(FileController.Uploads),"File")" enctype="multipart/form-data">
         <input id="file" type="file" name ="file.txt"/>
         <input type="submit" value="Загрузить"/>
+         <input class="form-control " placeholder="Имя" name="firstName"/>
+         <input class="form-control mr-sm-4 " placeholder="Фамилия" name="secondName"/>
+         <input class="form-control mr-sm-4 " placeholder="Отчество" name="thirdName"/>
     </form>
+
 
     <script> 
         const file = document.getElementById("file")

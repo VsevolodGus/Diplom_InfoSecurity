@@ -19,7 +19,7 @@ namespace Diplom.InfoSecurity
         }
 
 
-        public async Task SaveFilesToRepositroty()
+        public async Task SaveFilesToRepositroty(string firstName, string secondName, string thirdName)
         {
             var files = _workFile.GetPathFiles();
 
@@ -36,11 +36,17 @@ namespace Diplom.InfoSecurity
                 {
                     Id = newId,
                     Name = fileName,
-                    Text = text,
                     DateTime = DateTime.UtcNow,
                     Hash = _securityService.CalculateMD5Hash(text),
                     AsymetricCode = _securityService.Encrypt(text, out byte[] encBytes, newId),
                     EncBytes = encBytes,
+                    User = new User()
+                    {
+                        Id = Guid.NewGuid(),
+                        FirstName = firstName,
+                        SecondName = secondName,
+                        ThirdName = thirdName,
+                    }
                 };
                 _fileRepository.AddFile(dataItem);
                 #endregion
@@ -85,7 +91,6 @@ namespace Diplom.InfoSecurity
                 {
                     Id = newId,
                     Name = fileName,
-                    Text = text,
                     DateTime = DateTime.UtcNow,
                     Hash = _securityService.CalculateMD5Hash(text),
                     AsymetricCode = _securityService.Encrypt(text, out byte[] encBytes, newId),

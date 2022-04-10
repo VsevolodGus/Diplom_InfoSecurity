@@ -42,6 +42,13 @@ namespace Diplom.Controllers
                 Id = c.Id,
                 Name = c.Name,
                 DateTme = c.DateTime,
+                User = c.User ?? new User()
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "",
+                    SecondName = "",
+                    ThirdName = ""
+                },
             }).ToList();
             return View("ListFiles", model);
         }
@@ -55,7 +62,7 @@ namespace Diplom.Controllers
         #endregion
 
         #region Работа с данными
-        public async Task<IActionResult> Uploads()
+        public async Task<IActionResult> Uploads(string firstName, string secondName, string thirdName)
         {
             var files = Request.Form.Files;
             
@@ -65,10 +72,8 @@ namespace Diplom.Controllers
 
             foreach (var file in files)
             {
-                if (file.Length > 1024)
-                    continue;
-
-                if (_fileRepository.IsExsistsFileByTitle(file.Name.Split(".",StringSplitOptions.RemoveEmptyEntries).First()))
+                if (file.Length > 10000
+                    || _fileRepository.IsExsistsFileByTitle(file.Name.Split(".", StringSplitOptions.RemoveEmptyEntries).First()))
                     continue;
 
                 string fullPath = _pathUploads + @"\" + file.Name;
@@ -76,9 +81,11 @@ namespace Diplom.Controllers
                 {
                     await file.CopyToAsync(fileStream);
                 }
+                
+                await _securityMediator.SaveFilesToRepositroty(firstName, secondName, thirdName);
             }
             Request.Form = null;
-            await _securityMediator.SaveFilesToRepositroty();
+            
 
             return await GetListDataFiles();
         }
@@ -91,13 +98,10 @@ namespace Diplom.Controllers
             var model = _fileRepository.GetFileById(id);
             var memory = new MemoryStream();
 
-            var pathFile = _pathWrite + @"\" + model.Name;
+            //var pathFile = _pathWrite + @"\" + model.Name;
+            //if (!System.IO.File.Exists(pathFile))
+            //    await _securityMediator.CreateNotExistsFile(model.Name, model.Text, id);
 
-            if (!System.IO.File.Exists(pathFile))
-                await _securityMediator.CreateNotExistsFile(model.Name, model.Text, id);
-
-
-            
             await using (var stream = new FileStream(_pathWrite + @"\" + model.Name, FileMode.Open))
             {
                 await stream.CopyToAsync(memory);
