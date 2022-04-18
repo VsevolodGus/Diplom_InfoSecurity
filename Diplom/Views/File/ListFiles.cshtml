@@ -5,11 +5,11 @@
         <tr>
             <th scope="col">Номер</th>
             <th scope="col">Название</th>
-            <th scope="col">Хозяин</th>
+            <th scope="col">Владелец</th>
             <th scope="col">Дата</th>
             <th scope="col">Время</th>
             <th scope="col">Скачать файл</th>
-            <th scope="col">Получить расшифроку</th>
+            <th scope="col">Получить расшифрованные данные</th>
             <th scope="col">Показать данные</th>
         </tr>
     </thead>
@@ -22,11 +22,11 @@
                 
                 if(Model[i].User.FirstName+Model[i].User.SecondName+Model[i].User.ThirdName == string.Empty)
                 {
-                    <td>Нет хозяина</td>
+                    <td>Нет владельца</td>
                 }
                 else
                 {
-                    <td>@(Model[i].User.FirstName + " " + Model[i].User.SecondName + " " + Model[i].User.ThirdName)</td>
+                    <td>@Model[i].User.FirstName @Model[i].User.SecondName @Model[i].User.ThirdName)</td>
                 }
 
                 <td>@Model[i].DateTme.Date.ToString("dd/MM/yyyy")</td>

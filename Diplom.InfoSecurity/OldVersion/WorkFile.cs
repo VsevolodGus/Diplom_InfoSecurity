@@ -51,6 +51,12 @@ namespace Diplom.InfoSecurity
         #endregion
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"> путь для сохранения</param>
+        /// <param name="encrypttext"> зашифрованный текст </param>
+        /// <returns></returns>
         public async Task CreateFile(string path, string encrypttext)
         {
             var fileName = GetNameFile(path);

@@ -19,19 +19,23 @@ namespace Diplom.InfoSecurity
         }
 
 
-        public async Task SaveFilesToRepositroty(string firstName, string secondName, string thirdName)
+
+        public async Task<Guid> SaveFilesToRepositroty(string firstName, string secondName, string thirdName)
         {
             var files = _workFile.GetPathFiles();
-
+            var newId = Guid.NewGuid();
             foreach (var file in files)
             {
+                // проверка фальсификации
                 var fileName = _workFile.GetNameFile(file);
                 if (_fileRepository.IsExsistsFileByTitle(fileName))
                     continue;
 
-                #region Сохранение в базу
+                #region Сохранение данных о файле
+
                 var text = await _workFile.GetTextFromFile(file);
-                var newId = Guid.NewGuid();
+                
+                // создание модели для хранения данных о файле
                 var dataItem = new FileDTO()
                 {
                     Id = newId,
@@ -48,28 +52,33 @@ namespace Diplom.InfoSecurity
                         ThirdName = thirdName,
                     }
                 };
+                // запись данных о файле
                 _fileRepository.AddFile(dataItem);
                 #endregion
 
-                // сразу создается файл под с зашифрованными данными
+                // создание файла с зашифрованным текстом
                 await _workFile.CreateFile(file, dataItem.AsymetricCode);
             }
+
+            return newId;
         }
 
 
-        public async Task CreateNotExistsFile(string fileName, string text, Guid fileId)
-        {
-            var encryptText = _securityService.Encrypt(text, out byte[] encBytes, fileId);
-            var listFiles = _workFile.GetPathFiles();
-            if(!listFiles.Contains(fileName))
-                await _workFile.CreateFile(fileName, encryptText);
-        }
+        //public async Task CreateNotExistsFile(string fileName, string text, Guid fileId)
+        //{
+        //    var encryptText = _securityService.Encrypt(text, out byte[] encBytes, fileId);
+        //    var listFiles = _workFile.GetPathFiles();
+        //    if(!listFiles.Contains(fileName))
+        //        await _workFile.CreateFile(fileName, encryptText);
+        //}
 
 
 
         public async Task<string> GetDecryptText(Guid fileId)
         {
+            // получение данных о файле
             var model = _fileRepository.GetFileById(fileId);
+            // Расшифрование текста зашифрованного файла
             var text = _securityService.Decyrpt(model.EncBytes, fileId);
             return text;
         }

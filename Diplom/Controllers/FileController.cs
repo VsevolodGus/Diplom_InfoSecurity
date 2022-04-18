@@ -24,7 +24,13 @@ namespace Diplom.Controllers
         {
             this._fileRepository = fileRepository;
             this._pathUploads = Environment.CurrentDirectory + @"\uploads";
+            if (Directory.Exists(_pathUploads))
+                Directory.CreateDirectory(_pathUploads);
+
             this._pathWrite = Environment.CurrentDirectory + @"\encryptfiles";
+            if (Directory.Exists(_pathWrite))
+                Directory.CreateDirectory(_pathWrite);
+
             this._securityMediator = new SecurityMediator(_fileRepository, _pathUploads, _pathWrite);
             _securityMediator.AddInRepositoryExiststFiles().Wait();
         }
@@ -37,7 +43,7 @@ namespace Diplom.Controllers
         public async Task<IActionResult> GetListDataFiles(string query = "", int skipCount = 0, int count = 10)
         {
             var files = _fileRepository.GetFiles(query, skipCount, count);
-            var model = files.Select(c=> new FileModelTable
+            var model = files.Select(c => new FileModelTable
             {
                 Id = c.Id,
                 Name = c.Name,
@@ -62,41 +68,51 @@ namespace Diplom.Controllers
         #endregion
 
         #region Работа с данными
+        /// <summary>
+        /// првоерка коррекктнотси загружаемого файла и его сохранение
+        /// </summary>
+        /// <param name="firstName"> имя владельца</param>
+        /// <param name="secondName"> фамилия владельца </param>
+        /// <param name="thirdName"> отчество владельца </param>
+        /// <returns></returns>
         public async Task<IActionResult> Uploads(string firstName, string secondName, string thirdName)
         {
+            #region Проверка корректности имени владельца загружаемого файла
             if (firstName is null)
                 firstName = "";
-
             if (secondName is null)
                 secondName = "";
-
             if (thirdName is null)
                 thirdName = "";
+            #endregion
 
-            var files = Request.Form.Files;
-            
-            if (Directory.Exists(_pathUploads)) 
-                Directory.CreateDirectory(_pathUploads);
             
 
-            foreach (var file in files)
+            #region Проверки на корректность
+            var file = Request.Form.Files.FirstOrDefault();
+            if (file == null)
+                return NotFound();
+
+            //ограничение размер файла и проверка существования в базе
+            if (file.Length > 1000)
+                return View(); // файл слишком большой
+
+            // возможно это фальсифицированный
+            if (_fileRepository.IsExsistsFileByTitle(file.Name.Split(".", StringSplitOptions.RemoveEmptyEntries).First()))
+                return View();
+            #endregion
+
+            // задание пути для сохранения файла откуда будет считваться текст
+            string fullPath = _pathUploads + @"\" + file.Name;
+            using (var fileStream = new FileStream(fullPath, FileMode.Create))
             {
-                if (file.Length > 10000
-                    || _fileRepository.IsExsistsFileByTitle(file.Name.Split(".", StringSplitOptions.RemoveEmptyEntries).First()))
-                    continue;
-
-                string fullPath = _pathUploads + @"\" + file.Name;
-                using (var fileStream = new FileStream(fullPath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileStream);
-                }
-                
-                await _securityMediator.SaveFilesToRepositroty(firstName, secondName, thirdName);
+                await file.CopyToAsync(fileStream);
             }
-            Request.Form = null;
-            
 
-            return await GetListDataFiles();
+            // сохранение в базу
+            var fileId = await _securityMediator.SaveFilesToRepositroty(firstName, secondName, thirdName);
+
+            return await GetDataFile(fileId);
         }
 
 
@@ -107,29 +123,23 @@ namespace Diplom.Controllers
             var model = _fileRepository.GetFileById(id);
             var memory = new MemoryStream();
 
-            //var pathFile = _pathWrite + @"\" + model.Name;
-            //if (!System.IO.File.Exists(pathFile))
-            //    await _securityMediator.CreateNotExistsFile(model.Name, model.Text, id);
-
+            // создание выгружаемого файла
             await using (var stream = new FileStream(_pathWrite + @"\" + model.Name, FileMode.Open))
             {
                 await stream.CopyToAsync(memory);
             }
             memory.Position = 0;
-            //set correct content type here
+
+            // запись корректного типа файла
+            // выгрузка и определние расширения
             return File(memory, "application/octet-stream", model.Name.Split('.')[0] + ".sig");
-
-
         }
         #endregion
 
         #region Получение расшифровки
         public async Task<IActionResult> GetDecryptText(Guid id)
         {
-            
             var decryptText = await _securityMediator.GetDecryptText(id);
-
-
             return View("DecryptText", decryptText);
         }
         #endregion

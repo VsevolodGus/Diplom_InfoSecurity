@@ -1,7 +1,8 @@
-﻿using DiplomInfo.DataBase.Models;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System;
+using DiplomInfo.DataBase.Models;
+
 
 namespace DiplomInfo.DataBase
 {
@@ -42,9 +43,9 @@ namespace DiplomInfo.DataBase
             return files.First(c => c.Id == id);
         }
 
-        public bool IsExsistsFileByTitle(string name)
+        public bool IsExsistsFileByTitle(string name, string text = "")
         {
-            return files.Any(c => c.Name == name);
+            return files.Any(c => c.Name == name /*&& c.Name != text*/);
         }
 
     }

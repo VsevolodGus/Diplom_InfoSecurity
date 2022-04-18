@@ -8,7 +8,6 @@ namespace DiplomInfo.DataBase.Models
 
         public string Name { get; init; }
 
-        public string Text { get; set; }
 
         public string Hash { get; set; }
 
