@@ -95,11 +95,11 @@ namespace Diplom.Controllers
 
             //ограничение размер файла и проверка существования в базе
             if (file.Length > 1000)
-                return View(); // файл слишком большой
+                return View("FileIsBug");
 
-            // возможно это фальсифицированный
+            // возможно это фальсифицированный файл
             if (_fileRepository.IsExsistsFileByTitle(file.Name.Split(".", StringSplitOptions.RemoveEmptyEntries).First()))
-                return View();
+                return View("FileIsExists");
             #endregion
 
             // задание пути для сохранения файла откуда будет считваться текст
