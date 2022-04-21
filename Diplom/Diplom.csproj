@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="uploads\" />
     <Folder Include="Views\Home\js\" />
   </ItemGroup>
 

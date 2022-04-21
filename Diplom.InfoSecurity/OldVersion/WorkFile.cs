@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using System;
+using System.Diagnostics;
 
 namespace Diplom.InfoSecurity
 {
@@ -10,40 +10,45 @@ namespace Diplom.InfoSecurity
     {   
         private readonly string _pathRead;
         private readonly string _pathWrite;
+        private readonly string _pathTempStorage;
 
-        public WorkFile(string pathRead, string pathWrite)
+
+        public WorkFile(string pathRead, string pathWrite, string pathTempStorage)
         {
             this._pathRead = pathRead;
             this._pathWrite = pathWrite;
+            this._pathTempStorage = pathTempStorage;
         }
 
         #region Get
         public List<string> GetPathFiles()
         {
+            // получени путей файлов из директории 
             return new List<string>(Directory.GetFiles(this._pathRead));
         }
 
         public string GetNameFile(string path, bool withExtension = true)
         {
-            var fileName = path.Split(@"\", System.StringSplitOptions.RemoveEmptyEntries).Last();
+            // получение последней части пути после \
+            var fileName = path.Split(@"\", StringSplitOptions.RemoveEmptyEntries).Last();
 
+            // удаляем расширения из названия
             if (!withExtension)
             {
-                foreach (var item in Utils.FileExtentions)
-                {
-                    fileName = fileName.Replace(item, "");
-                }
+                fileName = fileName.Split('.', StringSplitOptions.RemoveEmptyEntries).First();
             }
 
             return fileName;
         }
 
-        public async Task<string> GetTextFromFile(string path)
+        public string GetTextFromFile(string path)
         {
             string result;
+            //  объявления потока для чтения текста из файла
             using (var readre = new StreamReader(path))
             {
-                result = await readre.ReadToEndAsync();
+                // чтение текста из файла
+                result = readre.ReadToEnd();
             }
 
             return result;
@@ -57,21 +62,42 @@ namespace Diplom.InfoSecurity
         /// <param name="path"> путь для сохранения</param>
         /// <param name="encrypttext"> зашифрованный текст </param>
         /// <returns></returns>
-        public async Task CreateFile(string path, string encrypttext)
+        public void CreateFile(string path, string encrypttext)
         {
+            // получение имени файла по по пути
             var fileName = GetNameFile(path);
+            // составление пути
             var filePath = _pathWrite + @"\" + fileName;
+            // проверка наличия фалйа по заданному пути
             if (!File.Exists(filePath))
                 File.Create(filePath);
 
-            while (!IsLocked(filePath))
-                continue;
-
-            using (var writer = new StreamWriter(filePath))
+            // создание таймера
+            var time = new Stopwatch();
+            // запуск таймера
+            time.Start();
+            while (time.ElapsedMilliseconds < 1000)
             {
-                await writer.WriteLineAsync(encrypttext);
+                // попытка записи текста в файл
+                try
+                {
+                    // создание потока для записи в файл
+                    using (var writer = new StreamWriter(filePath))
+                    {
+                        // запись в файл
+                        writer.WriteLine(encrypttext); 
+                    }
+                    //выход из цикла
+                    break;
+                }
+                catch
+                { }
             }
+            time.Stop(); // остановка таймера
         }
+
+
+
 
         private static bool IsLocked(string fileName)
         {

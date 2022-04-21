@@ -20,19 +20,24 @@ namespace Diplom.Controllers
         private readonly SecurityMediator _securityMediator;
         private readonly string _pathUploads;
         private readonly string _pathWrite;
+        private readonly string _pathTempStorage;
         public FileController(FileRepository fileRepository)
         {
             this._fileRepository = fileRepository;
             this._pathUploads = Environment.CurrentDirectory + @"\uploads";
-            if (Directory.Exists(_pathUploads))
+            if (!Directory.Exists(_pathUploads))
                 Directory.CreateDirectory(_pathUploads);
 
             this._pathWrite = Environment.CurrentDirectory + @"\encryptfiles";
-            if (Directory.Exists(_pathWrite))
+            if (!Directory.Exists(_pathWrite))
                 Directory.CreateDirectory(_pathWrite);
 
-            this._securityMediator = new SecurityMediator(_fileRepository, _pathUploads, _pathWrite);
-            _securityMediator.AddInRepositoryExiststFiles().Wait();
+            this._pathTempStorage = Environment.CurrentDirectory + @"\tempStorage";
+            if (!Directory.Exists(_pathTempStorage))
+                Directory.CreateDirectory(_pathTempStorage);
+
+            this._securityMediator = new SecurityMediator(_fileRepository, _pathUploads, _pathWrite, _pathTempStorage);
+            _securityMediator.AddInRepositoryExiststFiles();
         }
         public IActionResult Index()
         {
@@ -40,9 +45,9 @@ namespace Diplom.Controllers
         }
 
         #region Получение данных
-        public async Task<IActionResult> GetListDataFiles(string query = "", int skipCount = 0, int count = 10)
+        public async Task<IActionResult> GetListDataFiles(string query = "")
         {
-            var files = _fileRepository.GetFiles(query, skipCount, count);
+            var files = _fileRepository.GetFiles(query);
             var model = files.Select(c => new FileModelTable
             {
                 Id = c.Id,
@@ -95,12 +100,24 @@ namespace Diplom.Controllers
 
             //ограничение размер файла и проверка существования в базе
             if (file.Length > 1000)
-                return View("FileIsBug");
+                return View("FileIsBig");
+            #endregion
+
+            string pathTempStorage = _pathTempStorage + @"\" + file.Name;
+            using (var fileStream = new FileStream(_pathTempStorage, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
 
             // возможно это фальсифицированный файл
-            if (_fileRepository.IsExsistsFileByTitle(file.Name.Split(".", StringSplitOptions.RemoveEmptyEntries).First()))
+            var text = System.IO.File.ReadAllText(pathTempStorage);
+            if (_securityMediator.IsExsistsFileByTitleAndText(file.Name, text))
+            {
                 return View("FileIsExists");
-            #endregion
+            }
+            // удаляем файл из временного хранилища
+            System.IO.File.Delete(_pathTempStorage);
+
 
             // задание пути для сохранения файла откуда будет считваться текст
             string fullPath = _pathUploads + @"\" + file.Name;
@@ -110,7 +127,7 @@ namespace Diplom.Controllers
             }
 
             // сохранение в базу
-            var fileId = await _securityMediator.SaveFilesToRepositroty(firstName, secondName, thirdName);
+            var fileId = await _securityMediator.SaveFilesToRepositroty(firstName, secondName, thirdName, text);
 
             return await GetDataFile(fileId);
         }
@@ -120,9 +137,11 @@ namespace Diplom.Controllers
         [HttpGet, DisableRequestSizeLimit]
         public async Task<IActionResult> DownloadFile(Guid id)
         {
+            // получение данных о файле по его индентификатору
             var model = _fileRepository.GetFileById(id);
+            
+            // создание потока памяти для выгрузки файла
             var memory = new MemoryStream();
-
             // создание выгружаемого файла
             await using (var stream = new FileStream(_pathWrite + @"\" + model.Name, FileMode.Open))
             {
@@ -139,6 +158,7 @@ namespace Diplom.Controllers
         #region Получение расшифровки
         public async Task<IActionResult> GetDecryptText(Guid id)
         {
+            // получение расшифрованного текста
             var decryptText = await _securityMediator.GetDecryptText(id);
             return View("DecryptText", decryptText);
         }

@@ -1,3 +1,4 @@
+using Diplom.Controllers;
 using Diplom.InfoSecurity;
 using DiplomInfo.DataBase;
 using Microsoft.AspNetCore.Builder;
@@ -21,6 +22,7 @@ namespace Diplom
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddScoped<FileController>();
             services.AddSingleton<FileRepository>();
             //services.AddScoped<SecurityMediator>();
         }

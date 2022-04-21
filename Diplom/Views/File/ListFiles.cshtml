@@ -20,13 +20,13 @@
                 <td>@(i+1)</td>
                 <td> <a href="@Url.Action(nameof(FileController.GetDataFile),"File", new {fileId = @Model[i].Id} )" > @Model[i].Name</a></td>
                 
-                if(Model[i].User.FirstName+Model[i].User.SecondName+Model[i].User.ThirdName == string.Empty)
+                @if(Model[i].User.FirstName+Model[i].User.SecondName+Model[i].User.ThirdName == string.Empty)
                 {
                     <td>Нет владельца</td>
                 }
                 else
                 {
-                    <td>@Model[i].User.FirstName @Model[i].User.SecondName @Model[i].User.ThirdName)</td>
+                    <td>@Model[i].User.FirstName @Model[i].User.SecondName @Model[i].User.ThirdName</td>
                 }
 
                 <td>@Model[i].DateTme.Date.ToString("dd/MM/yyyy")</td>

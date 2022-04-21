@@ -16,23 +16,20 @@ namespace DiplomInfo.DataBase
         }
 
 
-        public bool AddFile(FileDTO model)
+        public void AddFile(FileDTO model)
         {
             files.Add(model);
-            return true;
         }
 
-        public List<FileDTO> GetFiles(string query, int skipCount, int count)
+        public List<FileDTO> GetFiles(string query)
         {
             if (string.IsNullOrEmpty(query))
             {
-                return files.OrderBy(c => c.DateTime).Skip(skipCount).Take(count).ToList();
+                return files.ToList();
             }
             else
             {
                 return files.Where(x => x.Name.Contains(query))
-                            .OrderBy(c => c.DateTime)
-                            .Skip(skipCount).Take(count)
                             .ToList();
             }
         }
@@ -43,9 +40,14 @@ namespace DiplomInfo.DataBase
             return files.First(c => c.Id == id);
         }
 
-        public bool IsExsistsFileByTitle(string name, string text = "")
+        public bool IsExsistsFileByTitle(string name)
         {
-            return files.Any(c => c.Name == name /*&& c.Name != text*/);
+            return files.Any(c => c.Name == name);
+        }
+
+        public bool IsExsistsFileByTitleAndHash(string name, string hash)
+        {
+            return files.Any(c => c.Name == name && c.Hash != hash);
         }
 
     }

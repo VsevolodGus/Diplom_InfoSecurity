@@ -11,29 +11,29 @@ namespace Diplom.InfoSecurity
         private readonly FileRepository _fileRepository;
         private readonly WorkFile _workFile;
         private readonly SecurityService _securityService;
-        public SecurityMediator(FileRepository fileRepository, string pathUploads, string pathWrite)
+        public SecurityMediator(FileRepository fileRepository, string pathUploads, string pathWrite, string pathTempStorage)
         {
-            _workFile = new WorkFile(pathUploads, pathWrite);
+            _workFile = new WorkFile(pathUploads, pathWrite, pathTempStorage);
             _securityService = new SecurityService();
             _fileRepository = fileRepository;
         }
 
 
 
-        public async Task<Guid> SaveFilesToRepositroty(string firstName, string secondName, string thirdName)
+        public async Task<Guid> SaveFilesToRepositroty(string firstName, string secondName, string thirdName, string text)
         {
+            // получение всех путей файлов в хранилище
             var files = _workFile.GetPathFiles();
+            // задаем новый идентификатор для загружаемого файла
             var newId = Guid.NewGuid();
             foreach (var file in files)
             {
                 // проверка фальсификации
                 var fileName = _workFile.GetNameFile(file);
-                if (_fileRepository.IsExsistsFileByTitle(fileName))
+                if (_fileRepository.IsExsistsFileByTitleAndHash (fileName, text))
                     continue;
 
                 #region Сохранение данных о файле
-
-                var text = await _workFile.GetTextFromFile(file);
                 
                 // создание модели для хранения данных о файле
                 var dataItem = new FileDTO()
@@ -57,21 +57,11 @@ namespace Diplom.InfoSecurity
                 #endregion
 
                 // создание файла с зашифрованным текстом
-                await _workFile.CreateFile(file, dataItem.AsymetricCode);
+                _workFile.CreateFile(file, dataItem.AsymetricCode);
             }
 
             return newId;
         }
-
-
-        //public async Task CreateNotExistsFile(string fileName, string text, Guid fileId)
-        //{
-        //    var encryptText = _securityService.Encrypt(text, out byte[] encBytes, fileId);
-        //    var listFiles = _workFile.GetPathFiles();
-        //    if(!listFiles.Contains(fileName))
-        //        await _workFile.CreateFile(fileName, encryptText);
-        //}
-
 
 
         public async Task<string> GetDecryptText(Guid fileId)
@@ -83,7 +73,7 @@ namespace Diplom.InfoSecurity
             return text;
         }
 
-        public async Task AddInRepositoryExiststFiles()
+        public void AddInRepositoryExiststFiles()
         {
             var files = _workFile.GetPathFiles();
 
@@ -94,7 +84,7 @@ namespace Diplom.InfoSecurity
                     continue;
 
                 #region Сохранение в базу
-                var text = await _workFile.GetTextFromFile(file);
+                var text = _workFile.GetTextFromFile(file);
                 var newId = Guid.NewGuid();
                 var dataItem = new FileDTO()
                 {
@@ -109,8 +99,18 @@ namespace Diplom.InfoSecurity
                 #endregion
 
                 // сразу создается файл под с зашифрованными данными
-                await _workFile.CreateFile(file, dataItem.AsymetricCode);
+                _workFile.CreateFile(file, dataItem.AsymetricCode);
             }
+        }
+
+
+        public bool IsExsistsFileByTitleAndText(string fileName, string text)
+        {
+            // получение хеша текста
+            var hash = _securityService.CalculateMD5Hash(text);
+
+            // проверка есть ли такой файл с таким название и содержимым по хешу
+            return _fileRepository.IsExsistsFileByTitleAndHash(fileName, hash);
         }
     }
 }

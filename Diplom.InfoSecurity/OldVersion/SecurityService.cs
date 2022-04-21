@@ -48,12 +48,16 @@ namespace Diplom.InfoSecurity
         {
             // создание ключа шифрования
             var privateKey = _RSA.ExportParameters(true);
-
-            Utils.DataFile.Add(new KeyModel()
+            
+            if (fileId != Guid.Empty)
             {
-                FileId = fileId,
-                Key = privateKey,
-            });
+                // добавление в хранилище ключей для каждого файла
+                Utils.DataFile.Add(new KeyModel()
+                {
+                    FileId = fileId,
+                    Key = privateKey,
+                });
+            }
 
             // получение зашифрованного текста из файла в байтовом виде
             encBytes = RSAEncrypt(_byteConverter.GetBytes(input), privateKey, false);
