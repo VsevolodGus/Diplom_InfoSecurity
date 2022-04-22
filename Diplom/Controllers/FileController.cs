@@ -104,7 +104,7 @@ namespace Diplom.Controllers
             #endregion
 
             string pathTempStorage = _pathTempStorage + @"\" + file.Name;
-            using (var fileStream = new FileStream(_pathTempStorage, FileMode.Create))
+            using (var fileStream = new FileStream(pathTempStorage, FileMode.Create))
             {
                 await file.CopyToAsync(fileStream);
             }
@@ -116,7 +116,7 @@ namespace Diplom.Controllers
                 return View("FileIsExists");
             }
             // удаляем файл из временного хранилища
-            System.IO.File.Delete(_pathTempStorage);
+            System.IO.File.Delete(pathTempStorage);
 
 
             // задание пути для сохранения файла откуда будет считваться текст

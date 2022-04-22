@@ -47,7 +47,7 @@ namespace DiplomInfo.DataBase
 
         public bool IsExsistsFileByTitleAndHash(string name, string hash)
         {
-            return files.Any(c => c.Name == name && c.Hash != hash);
+            return files.Any(c => c.Name == name && c.Hash == hash);
         }
 
     }
