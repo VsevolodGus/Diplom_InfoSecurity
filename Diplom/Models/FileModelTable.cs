@@ -11,12 +11,12 @@ namespace Diplom.Models
 
         public DateTime DateTme { get; set; }
 
-        public User User { get; set; } = new User()
+        public UserEntity User { get; set; } = new UserEntity()
         {
             Id = Guid.NewGuid(),
-            FirstName = "",
-            SecondName = "",
-            ThirdName= ""
+            Name = "",
+            Surname = "",
+            Patronymic= ""
         };
     }
 }

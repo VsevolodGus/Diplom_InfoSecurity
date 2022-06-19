@@ -11,7 +11,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">СуперКрипт</a>
-                <form class="form-inline my-2 my-lg-0" action="@Url.Action(nameof(FileController.GetListDataFiles), "File")">
+                <form class="form-inline my-2 my-lg-0" action="@Url.Action(nameof(FileController.GetListDataFiles), "File")" method="get">
                     <input class="form-control mr-sm-4 " placeholder="Введите текст" name="query"/>
                     <button class="btn btn-outline-info my-2 my-sm-3" type="submit">Получить все из базы</button>
                 </form>

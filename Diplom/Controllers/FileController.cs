@@ -1,167 +1,110 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Diplom.InfoSecurity;
+using Diplom.InfoSecurity.Utils;
 using Diplom.Models;
-using DiplomInfo.DataBase;
+using DiplomInfo.DataBase.InterfaceRepository;
 using DiplomInfo.DataBase.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Diplom.Controllers
 {
-    // TODO 
-    // уточнить по поводу ключей для шифрования
-
-    
     public class FileController : Controller
     {
-        private readonly FileRepository _fileRepository;
+        // сделать переходный уровень между controller и repository
+        private readonly IFileRepository _fileRepository;
         private readonly SecurityMediator _securityMediator;
         private readonly string _pathUploads;
         private readonly string _pathWrite;
         private readonly string _pathTempStorage;
-        public FileController(FileRepository fileRepository)
+        public FileController(IFileRepository fileRepository)
         {
-            this._fileRepository = fileRepository;
-            this._pathUploads = Environment.CurrentDirectory + @"\uploads";
-            if (!Directory.Exists(_pathUploads))
-                Directory.CreateDirectory(_pathUploads);
+            _fileRepository = fileRepository;
+            _securityMediator = new SecurityMediator(_fileRepository);
 
-            this._pathWrite = Environment.CurrentDirectory + @"\encryptfiles";
-            if (!Directory.Exists(_pathWrite))
-                Directory.CreateDirectory(_pathWrite);
-
-            this._pathTempStorage = Environment.CurrentDirectory + @"\tempStorage";
-            if (!Directory.Exists(_pathTempStorage))
-                Directory.CreateDirectory(_pathTempStorage);
-
-            this._securityMediator = new SecurityMediator(_fileRepository, _pathUploads, _pathWrite, _pathTempStorage);
-            _securityMediator.AddInRepositoryExiststFiles();
+            _pathUploads  = FileUtils.GetPathDirectoryCheckExistsAndCreate("uploads");
+            _pathWrite = FileUtils.GetPathDirectoryCheckExistsAndCreate("encryptfiles");
+            _pathTempStorage = FileUtils.GetPathDirectoryCheckExistsAndCreate("tempStorage");
         }
+
+
         public IActionResult Index()
         {
             return View();
         }
 
-        #region Получение данных
-        public async Task<IActionResult> GetListDataFiles(string query = "")
+        #region Methods getting data
+
+        // вынести в методы где берутся эти данные
+        [HttpGet]
+        public IActionResult GetListDataFiles(string query = "")
         {
-            var files = _fileRepository.GetFiles(query);
+            var files = _fileRepository.GetListBySearch(query);
             var model = files.Select(c => new FileModelTable
             {
                 Id = c.Id,
                 Name = c.Name,
                 DateTme = c.DateTime,
-                User = c.User ?? new User()
+                User = c.User ?? new UserEntity()
                 {
                     Id = Guid.NewGuid(),
-                    FirstName = "",
-                    SecondName = "",
-                    ThirdName = ""
+                    Name = "",
+                    Surname = "",
+                    Patronymic = ""
                 },
             }).ToList();
             return View("ListFiles", model);
         }
-
         
-        public async Task<IActionResult> GetDataFile(Guid fileId)
+        [HttpGet]
+        public IActionResult GetDataFile(Guid fileId)
         {
-            var model = _fileRepository.GetFileById(fileId);
+            var model = _fileRepository.GetById(fileId);
             return View("FileData", model);
         }
-        #endregion
 
-        #region Работа с данными
-        /// <summary>
-        /// првоерка коррекктнотси загружаемого файла и его сохранение
-        /// </summary>
-        /// <param name="firstName"> имя владельца</param>
-        /// <param name="secondName"> фамилия владельца </param>
-        /// <param name="thirdName"> отчество владельца </param>
-        /// <returns></returns>
-        public async Task<IActionResult> Uploads(string firstName, string secondName, string thirdName)
+        [HttpGet]
+        public IActionResult GetDecryptText(Guid id)
         {
-            #region Проверка корректности имени владельца загружаемого файла
-            if (firstName is null)
-                firstName = "";
-            if (secondName is null)
-                secondName = "";
-            if (thirdName is null)
-                thirdName = "";
-            #endregion
-
-            
-
-            #region Проверки на корректность
-            var file = Request.Form.Files.FirstOrDefault();
-            if (file == null)
-                return NotFound();
-
-            //ограничение размер файла и проверка существования в базе
-            if (file.Length > 1000)
-                return View("FileIsBig");
-            #endregion
-
-            string pathTempStorage = _pathTempStorage + @"\" + file.Name;
-            using (var fileStream = new FileStream(pathTempStorage, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            // возможно это фальсифицированный файл
-            var text = System.IO.File.ReadAllText(pathTempStorage);
-            if (_securityMediator.IsExsistsFileByTitleAndText(file.Name, text))
-            {
-                return View("FileIsExists");
-            }
-            // удаляем файл из временного хранилища
-            System.IO.File.Delete(pathTempStorage);
-
-
-            // задание пути для сохранения файла откуда будет считваться текст
-            string fullPath = _pathUploads + @"\" + file.Name;
-            using (var fileStream = new FileStream(fullPath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            // сохранение в базу
-            var fileId = await _securityMediator.SaveFilesToRepositroty(firstName, secondName, thirdName, text);
-
-            return await GetDataFile(fileId);
-        }
-
-
-        
-        [HttpGet, DisableRequestSizeLimit]
-        public async Task<IActionResult> DownloadFile(Guid id)
-        {
-            // получение данных о файле по его индентификатору
-            var model = _fileRepository.GetFileById(id);
-            
-            // создание потока памяти для выгрузки файла
-            var memory = new MemoryStream();
-            // создание выгружаемого файла
-            await using (var stream = new FileStream(_pathWrite + @"\" + model.Name, FileMode.Open))
-            {
-                await stream.CopyToAsync(memory);
-            }
-            memory.Position = 0;
-
-            // запись корректного типа файла
-            // выгрузка и определние расширения
-            return File(memory, "application/octet-stream", model.Name.Split('.')[0] + ".sig");
-        }
-        #endregion
-
-        #region Получение расшифровки
-        public async Task<IActionResult> GetDecryptText(Guid id)
-        {
-            // получение расшифрованного текста
-            var decryptText = await _securityMediator.GetDecryptText(id);
+            var decryptText = _securityMediator.GetDecryptText(id);
             return View("DecryptText", decryptText);
         }
         #endregion
+
+        [HttpPost]
+        public async Task<IActionResult> Uploads(string firstName, string secondName, string thirdName)
+        {
+            var file = Request.Form.Files.FirstOrDefault();
+
+            UserUtils.CheckOrDefaultFIO(ref firstName, ref secondName, ref thirdName);
+            var errorMessage = FileUtils.GetErrorMessageCheckFile(file);
+            if (!string.IsNullOrEmpty(errorMessage))
+                return View(errorMessage);
+
+
+            var pathTempStorage = await FileUtils.CreateAndGetPathFile(file, _pathTempStorage);
+            var text = FileUtils.GetTextFromFile(pathTempStorage);
+            if (_securityMediator.IsExsistsFileByTitleAndText(file.Name, text))
+                return View("FileIsExists");
+
+
+            // Сохранение в основное хранилище
+            await FileUtils.CreateAndGetPathFile(file, _pathUploads);
+            var fileId = _securityMediator.SaveFilesToRepositroty(firstName, secondName, thirdName, text, _pathUploads);
+
+            return GetDataFile(fileId);
+        }
+
+
+
+        [HttpGet, DisableRequestSizeLimit]
+        public async Task<IActionResult> DownloadSigFile(Guid id)
+        {
+            var model = _fileRepository.GetById(id);
+            var memoryStream = await FileUtils.GetFilledStreamFromFile(_pathWrite, model.Name);
+            return File(memoryStream, "application/octet-stream", model.Name.Split('.')[0] + ".sig");
+        }
+
     }
 }

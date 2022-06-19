@@ -1,15 +1,15 @@
-﻿@model FileDTO
+﻿@model FileEntity
 
 <p><strong>Название:</strong>@Model.Name</p>
 @*<p><strong>Текст:</strong><a>@Model.Text</a></p>*@
 <p><strong>Хэш:</strong>@Model.Hash</p>
 <p><strong>Зашифрованный текст: </strong>@Model.AsymetricCode</p>
-<form action="@Url.Action(nameof(FileController.DownloadFile),"File")" method="get">
+<form  action="@Url.Action(nameof(FileController.DownloadSigFile),"File")" method="get">
     <input type="hidden" name="id" value="@Model.Id" />
     <button class=" btn btn-success" type="submit">Скачать файл</button>
 </form>
 
-<form action="@Url.Action(nameof(FileController.GetDecryptText),"File")">
+<form action="@Url.Action(nameof(FileController.GetDecryptText),"File")" method="get">
     <input type="hidden" name="id" value="@Model.Id"/>
     <button class="btn btn-success  my-2 mb-lg-n4" type="submit">Показать расшифрованный текст</button>
 </form>

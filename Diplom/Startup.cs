@@ -23,8 +23,8 @@ namespace Diplom
         {
             services.AddControllersWithViews();
             services.AddScoped<FileController>();
-            services.AddSingleton<FileRepository>();
-            //services.AddScoped<SecurityMediator>();
+            services.AddRepositories(Configuration);
+            services.AddScoped<SecurityMediator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

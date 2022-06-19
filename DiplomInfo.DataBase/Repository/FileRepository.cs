@@ -2,26 +2,26 @@
 using System.Linq;
 using System.Collections.Generic;
 using DiplomInfo.DataBase.Models;
-
+using DiplomInfo.DataBase.InterfaceRepository;
 
 namespace DiplomInfo.DataBase
 {
-    public class FileRepository
+    internal class FileRepository : IFileRepository  
     {
-        private readonly List<FileDTO> files;
+        private readonly List<FileEntity> files;
 
         public FileRepository()
         {
-            this.files = new List<FileDTO>();
+            files = new List<FileEntity>();
         }
 
 
-        public void AddFile(FileDTO model)
+        public void Add(FileEntity model)
         {
             files.Add(model);
         }
 
-        public List<FileDTO> GetFiles(string query)
+        public List<FileEntity> GetListBySearch(string query)
         {
             if (string.IsNullOrEmpty(query))
             {
@@ -35,19 +35,19 @@ namespace DiplomInfo.DataBase
         }
 
 
-        public FileDTO GetFileById(Guid id)
+        public FileEntity GetById(Guid id)
         {
             return files.First(c => c.Id == id);
         }
 
-        public bool IsExsistsFileByTitle(string name)
+        public bool IsExsistsByTitle(string name)
         {
             return files.Any(c => c.Name == name);
         }
 
-        public bool IsExsistsFileByTitleAndHash(string name, string hash)
+        public bool IsExsistsByTitleAndHash(string name, string hash)
         {
-            return files.Any(c => c.Name == name && c.Hash == hash);
+            return files.Any(c => c.Name == name && c.Hash != hash);
         }
 
     }

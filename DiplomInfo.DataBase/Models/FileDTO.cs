@@ -2,12 +2,11 @@
 
 namespace DiplomInfo.DataBase.Models
 {
-    public class FileDTO
+    public class FileEntity
     {
         public Guid Id { get; init; }
 
         public string Name { get; init; }
-
 
         public string Hash { get; set; }
 
@@ -17,6 +16,6 @@ namespace DiplomInfo.DataBase.Models
 
         public byte[] EncBytes { get; set; }
 
-        public User User { get; set; }
+        public virtual UserEntity User { get; set; }
     }
 }

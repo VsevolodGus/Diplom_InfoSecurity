@@ -20,19 +20,19 @@
                 <td>@(i+1)</td>
                 <td> <a href="@Url.Action(nameof(FileController.GetDataFile),"File", new {fileId = @Model[i].Id} )" > @Model[i].Name</a></td>
                 
-                @if(Model[i].User.FirstName+Model[i].User.SecondName+Model[i].User.ThirdName == string.Empty)
+                @if(Model[i].User.Name+Model[i].User.Surname+Model[i].User.Patronymic == string.Empty)
                 {
                     <td>Нет владельца</td>
                 }
                 else
                 {
-                    <td>@Model[i].User.FirstName @Model[i].User.SecondName @Model[i].User.ThirdName</td>
+                    <td>@Model[i].User.Name @Model[i].User.Surname @Model[i].User.Patronymic</td>
                 }
 
                 <td>@Model[i].DateTme.Date.ToString("dd/MM/yyyy")</td>
                 <td>@Model[i].DateTme.ToString("HH:mm:ss")</td>
                 <td>
-                    <form action="@Url.Action(nameof(FileController.DownloadFile),"File", Model[i].Id)">
+                    <form action="@Url.Action(nameof(FileController.DownloadSigFile),"File", Model[i].Id)">
                         <input type="hidden" name="id" value="@Model[i].Id"/>
                         <button class="btn btn-success" type="submit">Скачать</button>
                     </form>
